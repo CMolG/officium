@@ -59,20 +59,18 @@ MCP over HTTP connects to the same URL.
 ## How a card moves
 
 ```mermaid
-flowchart LR
+flowchart TB
   you(["You"])
   agent(["Your agent<br/>Claude Code, Codex..."])
   subgraph officium ["Officium"]
-    direction TB
+    direction LR
     todo["To do"] --> doing["In progress"] --> review["Review"] --> done["Done"]
     review -- "sent back, with reasons" --> doing
-    needs["Needs you"]
+    doing -- "only a person can decide" --> needs["Needs you"]
   end
   you -- "writes and orders the cards" --> todo
-  agent -- "cards.next" --> todo
-  agent -- "cards.move" --> doing
-  doing -- "only a person can decide" --> needs
-  needs -- "you answer" --> you
+  agent -- "cards.next, cards.move" --> doing
+  needs -. "you answer" .-> you
 ```
 
 1. **You write the card** and say how it counts as done. Transitions carry contracts, so a card
