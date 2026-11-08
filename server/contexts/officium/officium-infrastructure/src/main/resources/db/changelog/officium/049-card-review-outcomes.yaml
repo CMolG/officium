@@ -1,0 +1,31 @@
+databaseChangeLog:
+  # JAVA-1526: every exit of a card from review is kept, append-only: an approval (review to deploy or done) with
+  # the reviewer's scorecard (one score per engineering dimension, clean or minor_observations) and observations,
+  # or a send-back with the engineering rules it broke, next to its ADR 0031 entry. Who, as which role, from and to
+  # which state. Expand only: a new table the previous release ignores.
+  - changeSet:
+      id: 049-card-review-outcomes
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_card_review_outcome (
+                id uuid primary key,
+                project_id uuid not null,
+                card_id uuid not null references officium_card (id) on delete cascade,
+                reviewed_at timestamptz not null,
+                actor jsonb not null,
+                role text,
+                from_status text not null,
+                to_status text not null,
+                verdict text not null check (verdict in ('approved', 'sent_back')),
+                rule_violations text[] not null default '{}',
+                scorecard jsonb not null default '{}'::jsonb,
+                observations text,
+                review_return_id uuid references officium_card_review_return (id) on delete set null
+              );
+              create index if not exists officium_card_review_outcome_card_idx
+                on officium_card_review_outcome (card_id, reviewed_at);
+              create index if not exists officium_card_review_outcome_project_idx
+                on officium_card_review_outcome (project_id, reviewed_at);

@@ -1,0 +1,180 @@
+{
+  "mods": [
+    {
+      "modId": "a11y-enforcer",
+      "version": 1,
+      "title": "a11y-enforcer: WCAG AAA Accessibility Enforcement Modifier",
+      "description": "Forces all generated UI elements to include ARIA labels, focus management, and pass WCAG AAA standards.",
+      "tags": [
+        "a11y",
+        "accessibility",
+        "wcag",
+        "inclusive"
+      ],
+      "domains": [
+        "frontend"
+      ],
+      "incompatibleWith": [],
+      "body": "# a11y-enforcer: WCAG AAA Accessibility Enforcement Modifier\n\nWhen this modifier is active, all generated UI elements must meet WCAG 2.1 Level AAA standards. Accessibility is not a feature — it is a non-negotiable requirement.\n\n## Rules\n\n1. **ARIA labels required.** Every interactive element (button, link, input, select, checkbox, radio) must have an accessible name via visible text content, `aria-label`, or `aria-labelledby`. No unnamed interactive elements.\n2. **Semantic HTML first.** Use native HTML elements (`<button>`, `<nav>`, `<main>`, `<article>`, `<header>`) before reaching for ARIA roles. A `<div onClick>` is never acceptable — use `<button>`.\n3. **Focus management.** All interactive elements must be keyboard-accessible via Tab/Shift+Tab. Custom focus order is set via `tabIndex` only when the DOM order is insufficient. Focus traps are implemented for modals and dialogs.\n4. **Color contrast AAA.** Normal text must have a contrast ratio of at least 7:1. Large text (18pt+ or 14pt+ bold) must have at least 4.5:1. Use tools or manual calculation to verify.\n5. **No information by color alone.** Color must not be the only means of conveying information. Use icons, patterns, text labels, or underlines in addition to color.\n6. **Screen reader compatibility.** Dynamic content changes must be announced via `aria-live` regions. Form errors must be associated with their inputs via `aria-describedby`. Loading states must be communicated via `aria-busy`.\n7. **Motion and animation.** Respect `prefers-reduced-motion`. All animations must have a reduced-motion alternative that conveys the same information without movement.\n8. **Touch targets.** All interactive elements must have a minimum touch target of 44x44 CSS pixels (WCAG AAA) with adequate spacing between adjacent targets.\n9. **Composite widgets follow WAI-ARIA Authoring Practices exactly.** For grids, listboxes, comboboxes, menus, tabs, tree views, and date pickers:\n   - Mark selectable items with `aria-selected` (or `aria-checked`) — a screen reader must be able to tell which items are selected. Missing `aria-selected` on a selected cell is a hard failure.\n   - Use **roving `tabindex`**: exactly one tab stop for the whole widget, with arrow keys (and Home/End/PageUp/PageDown where appropriate) moving focus inside it.\n   - Use **semantic headings** (`<h1>`–`<h6>`), never `role=\"heading\"` on a `<div>`.\n   - Avoid `role=\"application\"` unless you fully reimplement browser keyboard semantics; it traps assistive-tech navigation otherwise.\n   - Every ARIA state you style in CSS must actually be set in JS — no dead `aria-*` rules.\n10. **Landmark uniqueness.** Exactly one `<main>` per page, and one top-level banner `<header>` / `contentinfo` `<footer>`. When an app shell already renders the `<main>` (or header/footer) landmark, page components render `<section>`s INSIDE it — never nest a second `<main>` or emit a duplicate top-level `<header>`, which breaks landmark navigation and the skip-link target. Exactly one `<h1>` per page.\n\n## Behavioral Overrides\n\n- The agent must audit every UI element it creates or modifies for WCAG AAA compliance before committing.\n- If an existing component the agent is modifying fails accessibility standards, the agent fixes the violations on the lines its change already touches and reports the rest instead of fixing them.\n- The agent must test keyboard navigation flow after every UI change and verify logical tab order.\n"
+    },
+    {
+      "modId": "cognitive-ux",
+      "version": 1,
+      "title": "cognitive-ux: Cognitive Load & Interface Psychology Modifier",
+      "description": "Enforces the interface-psychology discipline: cognitive-load budget, mandatory states, classified friction, entry/exit symmetry, and plain-language value; loads the ux-psychology skill when the session offers it.",
+      "tags": [
+        "ux",
+        "cognitive",
+        "psychology",
+        "friction",
+        "clarity",
+        "trust",
+        "value"
+      ],
+      "domains": [
+        "frontend",
+        "web"
+      ],
+      "incompatibleWith": [],
+      "body": "# cognitive-ux: Cognitive Load & Interface Psychology Modifier\n\nWhen this modifier is active, every user-visible change is designed and reviewed under the\nproject's interface-psychology and value-clarity rules if the harness has them (e.g.\n`.harness/rules/interface-psychology.md` and `.harness/rules/value-clarity.md`). If the session\noffers the `ux-psychology` skill, it MUST be loaded before designing or auditing the surface — the\nrules below remain sufficient without it, but the skill carries the full protocol and the friction\nscanner.\n\n## Rules\n\n1. **Extraneous-load budget ≈ 0.** Every element on screen must support a step of the user's\n   task. For each element you add or keep, you can name that step; if you cannot, it is debt and\n   it goes. ≤4 items the user must hold at once, one primary decision per screen.\n2. **All mandatory states exist.** Initial, empty (with the first action suggested), loading\n   (with semantics, not a mute spinner), success (anchored to the affected object), error (what\n   happened, why, and the way out), and disabled (always with the reason visible). A surface\n   missing empty or error states is half-built, whatever the happy path looks like.\n3. **No dead controls, no silent actions.** Anything painted as pressable does something, and\n   every action yields perceptible feedback in ≤100 ms.\n4. **Friction is classified in writing.** Each point of friction is extrinsic (remove it),\n   desirable (keep it and justify it: irreversibility, cost, learning), or dark (prohibited —\n   DSA/GDPR exposure). \"Here there is NO confirmation because the action is reversible and undo\n   exists\" is valid documentation; write it.\n5. **Symmetry of entry and exit.** Cancelling, unsubscribing, or deleting costs no more steps\n   than the opposite action. Reversible actions get undo, not confirmation dialogs; irreversible\n   ones get a deliberate micro-limit proportional to the damage.\n6. **Plain language, congruent verbs.** The button's verb appears literally in the resulting\n   screen; value is stated before mechanism; internal jargon never reaches the user. Color is\n   never the only channel, and controls do not move between views without a written reason.\n\n## Behavioral Overrides\n\n- Before declaring a user-visible change done, the agent walks the project's interface-psychology\n  checks (or, when the project has none, the six rules above) and reports findings as mechanism +\n  concrete fix, never as vague adjectives.\n- If a requested change ADDS friction, the agent runs the friction decision tree and records the\n  decision in the deliverable (card, plan, or commit body).\n- Stacks cleanly with `error-ux` (surface-level async states) and `a11y-enforcer` (WCAG); it does\n  not overlap the design-system mods or an art-direction contract — those govern how a piece\n  LOOKS, this mod governs what is shown, in what order, with how much friction, and with which\n  words.\n"
+    },
+    {
+      "modId": "conventional-commits",
+      "version": 1,
+      "title": "conventional-commits: Atomic Conventional Commit Modifier",
+      "description": "Atomic commits in Conventional Commits format with why-focused bodies and clean, reviewable history.",
+      "tags": [
+        "git",
+        "commits",
+        "changelog",
+        "hygiene"
+      ],
+      "domains": [
+        "universal"
+      ],
+      "incompatibleWith": [],
+      "body": "# conventional-commits: Atomic Conventional Commit Modifier\n\nWhen this modifier is active, every commit is atomic, formatted as a Conventional Commit, and explains its motivation rather than narrating its diff. History reads as a reviewable narration, not a blob.\n\n## Rules\n\n1. **One logical change per commit.** Mixing a refactor with a feature, or a fix with unrelated formatting churn, is prohibited.\n2. **Conventional format.** `type(scope): imperative subject`, at most 72 characters, using types `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, or `chore`.\n3. **The body explains why.** The commit body covers motivation and trade-offs — it does not narrate the diff line by line.\n4. **Reference the task when one exists.** Link the relevant issue, task, or card ID in the commit body or footer.\n5. **Never commit secrets, artifacts, or unrelated churn.** Generated files, credentials, and unrelated formatting changes stay out of the commit.\n6. **Mark breaking changes explicitly.** Use the `!` marker and a `BREAKING CHANGE` footer with a migration note.\n\n## Behavioral Overrides\n\n- The agent plans the commit split before starting multi-part work, not after the working tree is already a mix of concerns.\n- When the working tree mixes concerns, the agent stages and commits each concern separately instead of producing one blob commit.\n- History is treated as a reviewable narrative — each commit should make sense read on its own, in sequence.\n"
+    },
+    {
+      "modId": "dark-mode",
+      "version": 1,
+      "title": "dark-mode: Tokenized Theming & Dark Mode",
+      "description": "Requires tokenized light/dark/system theming via CSS custom properties and prefers-color-scheme; forbids hardcoded colors.",
+      "tags": [
+        "theming",
+        "dark-mode",
+        "tokens",
+        "prefers-color-scheme"
+      ],
+      "domains": [
+        "frontend"
+      ],
+      "incompatibleWith": [],
+      "body": "# dark-mode: Tokenized Theming & Dark Mode\n\nRequires tokenized light/dark/system theming via CSS custom properties and `prefers-color-scheme`; forbids hardcoded colors. Every color in the product must flow through the design-token layer so that switching themes requires no component changes — only a root attribute flip.\n\n## Rules\n\n1. **All colors via design tokens — never hardcoded hex or rgb.** Every color value used in a component must reference a CSS custom property (e.g., `var(--color-surface-primary)`). Raw `#rrggbb`, `rgb()`, `hsl()`, or Tailwind arbitrary color values that bypass the token system are forbidden.\n\n2. **Support light, dark, AND system with a user override.** The theming system must respond to `prefers-color-scheme: dark` by default (system mode) and allow the user to pin light or dark via a persistent override stored in `localStorage` or a cookie. Three states, not two.\n\n3. **Maintain WCAG AA contrast in both themes.** Every foreground/background pairing must pass a minimum 4.5 : 1 contrast ratio for body text and 3 : 1 for large text and UI components in both light and dark variants. Do not assume a color that passes in one theme passes in the other.\n\n4. **Apply the theme via a `data-theme` attribute or a class on the root element.** Theme tokens must be scoped to `[data-theme=\"dark\"]` or `.dark` on `<html>` or a top-level wrapper. Component files must never contain theme-specific overrides inside their own selectors.\n\n5. **No flash of incorrect theme (FOIT/FOCS).** The correct theme class or attribute must be resolved and applied before the first paint — either via a blocking inline script in `<head>` or via a server-rendered class. Loading the theme after hydration is not acceptable.\n\n6. **Theme illustrations, images, and shadows.** Decorative images and illustrations must have dark-mode alternatives or use `mix-blend-mode`/`filter` where a single asset is used. Box shadows must use token values that are visible against dark surfaces (typically lower opacity, lighter color) rather than the same values used in light mode.\n\n7. **Respect `prefers-contrast` where relevant.** When the OS signals high-contrast mode, the agent must not override it. Ensure tokens include a high-contrast variant or gracefully inherit system forced-colors without hiding borders or focus rings.\n\n## Behavioral Overrides\n\n- The agent must scan every CSS rule and JSX/TSX style prop it writes for raw color values and replace them with token references before output is finalized.\n- When creating a new color role (e.g., a one-off decorative tint), the agent must define the token in both light and dark theme blocks — not just the theme currently being worked on.\n- If an existing component contains hardcoded colors, the agent tokenizes the values on the lines its change already touches and reports the rest instead of rewriting them.\n- Any generated `<script>` block responsible for theme resolution must be marked as blocking (no `defer`/`async`) and must include a comment explaining why it is blocking.\n"
+    },
+    {
+      "modId": "db-migrations-safe",
+      "version": 1,
+      "title": "db-migrations-safe: Zero-Downtime Schema Migration Modifier",
+      "description": "Reversible, expand-contract schema migrations with idempotent batched backfills and zero destructive changes at deploy time.",
+      "tags": [
+        "database",
+        "migrations",
+        "schema",
+        "expand-contract",
+        "zero-downtime"
+      ],
+      "domains": [
+        "backend"
+      ],
+      "incompatibleWith": [],
+      "body": "# db-migrations-safe: Zero-Downtime Schema Migration Modifier\n\nWhen this modifier is active, every schema change ships as a reversible, expand-contract migration with idempotent batched backfills. No destructive change lands in the same release as the code that stops using it.\n\n## Rules\n\n1. **Every schema change is a versioned, reversible migration.** Up and down migrations, or documented irreversibility with a backup step — manual schema edits are prohibited.\n2. **Expand-contract for renames, type changes, and drops.** Add the new shape, dual-write/backfill, switch reads, then retire the old shape — across separate deploys, never a rename-in-place on a live table.\n3. **No destructive operation alongside its last consumer.** A `DROP` or type-narrowing change never ships in the same release as the code that stops depending on the old shape.\n4. **Backfills are idempotent, batched, and resumable.** Bounded transactions, safe to re-run, never an unbounded `UPDATE` across a large table.\n5. **Avoid long locks.** Use concurrent index creation and similar non-blocking operations wherever the database engine supports them.\n6. **Test against realistic data.** Every migration is validated against realistic volume and shape, not an empty database.\n7. **The app tolerates both schemas during rollout.** Application code works against the pre- and post-migration schema simultaneously during the rollout window.\n\n## Behavioral Overrides\n\n- Before implementing any non-additive schema change, the agent presents the migration plan (phases plus rollback) first.\n- ORM auto-migrations are checked against these rules rather than trusted blindly.\n- Any risk of data loss is reported explicitly, never silently accepted.\n"
+    },
+    {
+      "modId": "explain-to-me",
+      "version": 1,
+      "title": "explain-to-me: Plain-Language Pedagogy Modifier",
+      "description": "Plain-language pedagogy in the conversation: defines jargon, uses project-anchored analogies, and recaps every change for non-expert builders.",
+      "tags": [
+        "pedagogy",
+        "plain-language",
+        "learning",
+        "vibe-coding"
+      ],
+      "domains": [
+        "universal"
+      ],
+      "incompatibleWith": [
+        "output-budget"
+      ],
+      "body": "# explain-to-me: Plain-Language Pedagogy Modifier\n\nWhen this modifier is active, the agent explains its work in plain language inside the conversation, for a builder who may not be an expert. Jargon is defined, analogies are anchored to the user's real project, and every unit of work ends with a recap.\n\n## Rules\n\n1. **Explain significant decisions in plain language, in the conversation.** Before or right after acting, state what was done, why, and what it means for the user's app.\n2. **No undefined jargon.** Every technical term is defined in a short clause on first use, preferring the everyday word when precision allows it.\n3. **Analogies anchored to the user's real project.** Use the user's actual app and files as the analogy source (\"this store is your app's shared whiteboard\"), never abstract computer-science examples.\n4. **Recap after every unit of work.** Two to four sentences: what changed, where, and how to see it working.\n5. **Flag what could bite them later.** Name the thing most likely to confuse or break next, proactively.\n6. **Invite direction, don't interrogate.** State assumptions made and ask only the questions that would actually change the work.\n\n## Behavioral Overrides\n\n- This modifier governs the conversation, not the artifacts — code stays professional and free of explanatory comment noise.\n- Explanations reference the user's actual file and variable names, never generic placeholders.\n- The agent teaches without condescension — plain language is a courtesy, not a sign the user is assumed incapable.\n- This modifier is incompatible with `output-budget`, whose no-narration and stop-when-done rules cover the conversation too. It is the conversational counterpart to `verbose-comments` (which governs code comments).\n"
+    },
+    {
+      "modId": "output-budget",
+      "version": 1,
+      "title": "output-budget: Minimal-Artifact Output Budget Modifier",
+      "description": "Optimizes for the smallest correct artifact and fewest tokens; enforces surgical edits over full rewrites.",
+      "tags": [
+        "concise",
+        "tokens",
+        "minimal",
+        "surgical"
+      ],
+      "domains": [
+        "universal"
+      ],
+      "incompatibleWith": [
+        "explain-to-me"
+      ],
+      "body": "# output-budget: Minimal-Artifact Output Budget Modifier\n\nWhen this modifier is active, the agent optimizes for the smallest correct artifact and the fewest tokens. Verbosity, redundancy, and full rewrites are budget violations.\n\n## Rules\n\n1. **Minimal viable artifact.** Produce the smallest output that fully satisfies the objective. Never pad length to look thorough.\n2. **Surgical edits, not rewrites.** When changing an existing file, modify only the lines that must change. Re-emitting an entire unchanged file is forbidden.\n3. **No filler.** No decorative comments, no restating the prompt, no \"here is what I will do\" preambles. Act, do not narrate.\n4. **One artifact per objective.** Do not generate auxiliary files, examples, or scaffolding that were not requested.\n5. **Bounded generation.** Keep any single generated file focused and reasonably sized; if the task implies a huge artifact, split the concern or ask, do not stream thousands of lines blindly.\n\n## Behavioral Overrides\n\n- The agent must not re-read or re-list files purely to \"confirm\" work already completed. A finalization review required by an active self-review constraint is not a budget violation.\n- If two phrasings convey the same instruction, the agent keeps the shorter one.\n- The agent stops as soon as the objective is met instead of elaborating further.\n"
+    },
+    {
+      "modId": "rule-enforcer",
+      "version": 1,
+      "title": "rule-enforcer: Review Against the Project's Written Rules",
+      "description": "Makes a review walk the project's written rules that apply to the change, one by one with evidence, and puts that checklist in the verdict: a violated rule is a send-back, an unchecked one is never a pass, and no checklist means no approval.",
+      "tags": [
+        "review",
+        "rules",
+        "quality",
+        "enforcement",
+        "verification"
+      ],
+      "domains": [
+        "universal"
+      ],
+      "incompatibleWith": [],
+      "body": "# rule-enforcer: Review Against the Project's Written Rules\n\nWhen this modifier is active, a review is judged against the project's written rules, not only against the diff and its tests. Every role of the review phase runs with it. Green checks are evidence about the tests; they are not a verdict on the rules.\n\n## Rules\n\n1. **Build the rule set before reading the diff.** List the rules that apply to this change:\n   - the project's invariants and its always-on rules;\n   - every rule whose scope matches a file the change touches (its path patterns, or the \"read it when\" table of the project's rule index);\n   - the card category's contract and the card's own acceptance criteria.\n\n   Read each one in full. A rule you only remember is not a rule you checked.\n2. **Walk every rule against the change, with evidence.** Evidence is a `file:line`, a command and its output, or a capture of the rendered screen. A rule you could not check is **not verified**, never **pass**, and you say why it could not be checked.\n3. **A violated rule is a send-back.** Name the rule, and its quality-rule id where the board has one. It is never an approval with a note, and never \"fix it in a later card\" unless the rule itself allows that.\n4. **What the change made stale counts.** A document, a rule text, a baseline or a contract that describes what this change altered, left unchanged, is a violation wherever the project requires docs to change with the code.\n5. **Interface rules are judged on the screen.** When the change touches what a person sees, the rules about layout, states, units, motion, contrast and copy are checked on captures at a laptop and a phone viewport, not by reading class names.\n6. **The verdict carries the checklist.** The review comment includes a table with one row per rule: the rule, its verdict (`pass`, `violated`, `not verified`, `not applicable`) and the evidence. No table, no approval.\n\n## Behavioral Overrides\n\n- A rule outranks the reviewer's taste and the author's explanation. Disagreeing with a rule is a card that proposes changing it, never an exception granted in review.\n- A violation is not softened because the rest of the change is good.\n- `not applicable` needs one line of why. A rule marked `not applicable` because it was inconvenient is a violation of this mod.\n"
+    }
+  ],
+  "requires": {
+    "performance-reviewer": [
+      "rule-enforcer"
+    ],
+    "code-reviewer": [
+      "rule-enforcer"
+    ],
+    "documentation-reviewer": [
+      "rule-enforcer"
+    ],
+    "technical-researcher": [],
+    "architecture-reviewer": [
+      "rule-enforcer"
+    ],
+    "frontend-developer": [],
+    "ux-ui-designer": [],
+    "security-reviewer": [
+      "rule-enforcer"
+    ],
+    "ux-ui-accessibility-reviewer": [
+      "rule-enforcer"
+    ],
+    "ux-researcher": [],
+    "findings-evaluator": [
+      "rule-enforcer"
+    ],
+    "acceptance-qa": [
+      "rule-enforcer"
+    ]
+  }
+}

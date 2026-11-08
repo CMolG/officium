@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # JAVA-584: the effort the model ran at (low, medium, high...), beside the model JAVA-245 already
+  # stores, so an entry says what the time and tokens were spent on. Null where nothing measured it.
+  # 018, not 017: JAVA-561 (the session queue) holds 017 in the same sprint.
+  - changeSet:
+      id: 018-time-entry-effort
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card_time_entry
+                add column if not exists effort text;

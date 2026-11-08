@@ -1,0 +1,25 @@
+databaseChangeLog:
+  # JAVA-793 (JAVA-788): a page is no longer published the moment it is written, and deleting it is
+  # no longer final. `published_at` null is an unpublished draft (only its creator sees it),
+  # `archived_at` takes it out of the tree and search, `deleted_at` puts it in the trash for 30 days.
+  # `published_at` defaults to now() so a row the previous release inserts during a rolling deploy
+  # stays published; existing pages are published at their creation. A trashed page frees its path:
+  # the unique index moves to live rows, and is created BEFORE the old one is dropped.
+  - changeSet:
+      id: 035-doc-lifecycle
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_page add column if not exists published_at timestamptz default now();
+              update officium_doc_page set published_at = created_at where published_at is not null;
+              alter table officium_doc_page add column if not exists archived_at timestamptz;
+              alter table officium_doc_page add column if not exists archived_by jsonb;
+              alter table officium_doc_page add column if not exists deleted_at timestamptz;
+              alter table officium_doc_page add column if not exists deleted_by jsonb;
+              create unique index if not exists uq_officium_doc_page_live_path
+                on officium_doc_page (project_id, path) where deleted_at is null;
+              drop index if exists uq_officium_doc_page_path;
+              create index if not exists ix_officium_doc_page_deleted
+                on officium_doc_page (deleted_at) where deleted_at is not null;

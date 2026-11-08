@@ -1,0 +1,54 @@
+# Officium Local: PostgreSQL, the API (REST + MCP) and the web app, all on this machine.
+#   docker compose up -d --build
+#   board:  http://127.0.0.1:3190
+#   MCP:    http://127.0.0.1:8190/officium/mcp
+name: ${COMPOSE_PROJECT_NAME:-officium-local}
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: officium
+      POSTGRES_USER: officium
+      POSTGRES_PASSWORD: ${OFFICIUM_DB_PASSWORD:-officium}
+    volumes:
+      - officium-db:/var/lib/postgresql/data
+    ports:
+      # Loopback only. Change the host port if 5432 is taken.
+      - "127.0.0.1:${OFFICIUM_DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U officium -d officium"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ./server
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      OFFICIUM_DB_URL: jdbc:postgresql://db:5432/officium
+      OFFICIUM_DB_USER: officium
+      OFFICIUM_DB_PASSWORD: ${OFFICIUM_DB_PASSWORD:-officium}
+      # Optional. When set, every API and MCP request must send "Authorization: Bearer <token>".
+      OFFICIUM_LOCAL_TOKEN: ${OFFICIUM_LOCAL_TOKEN:-}
+      OFFICIUM_LOCAL_OWNER_NAME: ${OFFICIUM_LOCAL_OWNER_NAME:-Local owner}
+    ports:
+      # Loopback only: with no token the API has no authentication.
+      - "127.0.0.1:${OFFICIUM_API_PORT:-8190}:8080"
+
+  web:
+    build:
+      context: ./web
+    depends_on:
+      - api
+    environment:
+      OFFICIUM_API_URL: http://api:8080
+      OFFICIUM_LOCAL_TOKEN: ${OFFICIUM_LOCAL_TOKEN:-}
+    ports:
+      - "127.0.0.1:${OFFICIUM_WEB_PORT:-3190}:3000"
+
+volumes:
+  officium-db:

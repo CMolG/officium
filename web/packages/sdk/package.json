@@ -1,0 +1,40 @@
+{
+  "name": "@javadaba/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed Javadaba client: shared account, credit wallet in dollars, achievements, unlockables and referrals. Used by the Host, web-public and app cores.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./platform": {
+      "types": "./src/platform/index.ts",
+      "react-native": "./src/platform/index.native.ts",
+      "default": "./src/platform/index.ts"
+    },
+    "./platform/raster": {
+      "types": "./src/platform/raster.ts",
+      "react-native": "./src/platform/raster.native.ts",
+      "default": "./src/platform/raster.ts"
+    },
+    "./storage": {
+      "types": "./src/storage/index.ts",
+      "react-native": "./src/storage/index.native.ts",
+      "default": "./src/storage/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "node --test src/platform/*.test.ts src/storage/*.test.ts src/wire.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

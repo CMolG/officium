@@ -1,0 +1,43 @@
+# Scheduled runs (JAVA-476): one row per clock-driven job and slot, so two app-api instances run
+# each job once per slot, a missed daily run is caught up, and anyone can read whether a job ran
+# without opening a log. The queue runners (product jobs, notify deliveries) are NOT here: they
+# claim rows of their own tables with FOR UPDATE SKIP LOCKED and are already safe with two
+# instances.
+databaseChangeLog:
+  - changeSet:
+      id: 001-scheduled-run-schema
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists scheduled_run (
+                id bigserial primary key,
+                job text not null,
+                -- The bucket start for an interval job, the local date for a daily one: two
+                -- instances that compute it at the same moment agree, which is the whole claim.
+                slot text not null,
+                status text not null check (status in
+                  ('running', 'succeeded', 'failed', 'abandoned', 'baseline')),
+                instance text not null,
+                started_at timestamptz not null,
+                finished_at timestamptz,
+                -- Renewed by the owner's heartbeat; once it passes, the run is abandoned and the
+                -- slot can be taken over.
+                lease_until timestamptz,
+                attempts int not null default 1,
+                error text,
+                constraint uq_scheduled_run_job_slot unique (job, slot)
+              );
+
+              -- The claim's "is another run of this job still alive" and the heartbeat's renewal.
+              create index if not exists idx_scheduled_run_running
+                on scheduled_run (job, lease_until) where status = 'running';
+
+              -- The metrics' "last success per job".
+              create index if not exists idx_scheduled_run_job_status_finished
+                on scheduled_run (job, status, finished_at desc);
+
+              -- Retention.
+              create index if not exists idx_scheduled_run_started
+                on scheduled_run (started_at);

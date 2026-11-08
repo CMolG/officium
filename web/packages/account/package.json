@@ -1,0 +1,24 @@
+{
+  "name": "@javadaba/account",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Officium Local stand-in for the ecosystem login: Local has one owner and no sign-in. Same names as the real package, so the app imports are unchanged.",
+  "type": "module",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./release-gate": "./src/release-gate.tsx",
+    "./app-entry": "./src/app-entry.ts"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "@types/node": "catalog:",
+    "next": "catalog:"
+  }
+}

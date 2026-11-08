@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 047-heartbeat-sign-in-family
+      author: javadaba
+      context: default
+      comment: >
+        JAVA-1425. The OAuth token family (the native app's sign-in) a heartbeat token or setup code
+        was created from, so signing out of the app deletes them; a code hands it to the token it is
+        redeemed into. Null from a web session or the MCP. Expand-only: nullable columns every
+        earlier release ignores.
+      changes:
+        - sql:
+            sql: |
+              alter table officium_heartbeat_token add column if not exists oauth_family_id uuid;
+              create index if not exists officium_heartbeat_token_family_idx
+                on officium_heartbeat_token (oauth_family_id) where oauth_family_id is not null;
+              alter table officium_heartbeat_code add column if not exists oauth_family_id uuid;
+              create index if not exists officium_heartbeat_code_family_idx
+                on officium_heartbeat_code (oauth_family_id) where oauth_family_id is not null;

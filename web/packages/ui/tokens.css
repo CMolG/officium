@@ -1,0 +1,806 @@
+/*
+ * @javadaba/ui — Javadaba design-system tokens.
+ *
+ * Import from the app's global CSS:  @import "@javadaba/ui/tokens.css";
+ *
+ * ## Quiet Bento (the redesign, Lib-Foundations)
+ *
+ * The product ground is washi (`--jd-page` #fbfaf7), cards are stone (`--jd-card` #f2f1ec), and
+ * the thing being worked on is white (`--jd-raised`). Ink is one black, #111111, and every
+ * secondary ink is that black at a measured alpha, so an app never writes an alpha by hand.
+ * The code speaks the design's own names: `--jd-page` (the ground), `--jd-ink` (the one black and
+ * everything written in it) and `--jd-line` (the hairline). Wave 7 took them back from the old
+ * names, which are gone. Next to them: `--jd-control` is
+ * `--jd-control-border`, `--jd-bar` is `--jd-nav-bg`, and `--jd-card`, `--jd-raised`, `--jd-focus`,
+ * `--jd-scrim`, the status pairs and `--jd-danger` are new.
+ *
+ * ## What changed on 2026-08-08 (the "Harmony" sprint)
+ *
+ * This file used to be a **dark, fixed** shadcn layer, scoped to `.jdui` so it wouldn't
+ * clobber the desktop's `:root`. That served what it was written for — a web-os dialog
+ * resolving `--card` — but it couldn't be the ecosystem's system, for a structural
+ * reason: `doc://contracts/design-surfaces` says the PRODUCT base surface is
+ * light, and here everything was nailed to dark. A design system that only knows how
+ * to paint half its surfaces isn't the system; it's one app's theme.
+ *
+ * Now the layer has two clearly separated halves, which is what lets the desktop stay
+ * dark and the landing stay light WITHOUT two systems:
+ *
+ *   1. **The scales** (radius, spacing, typography, elevation, motion). Identical
+ *      across the whole ecosystem and don't depend on where you are. They live in
+ *      `@theme`.
+ *   2. **The surface** (background, ink, hairlines, glass). Depends on where you are
+ *      and is declared with an attribute: `data-jd-surface="product|showcase|pulse|desktop"`.
+ *
+ * The surface resolves **by attribute, not by JavaScript or inline styles**. That has
+ * three consequences that matter: it can be nested (a dark island inside a light page
+ * is just a `div` with its own attribute — see § Islands), it prerenders without
+ * hydration, and there are no floats in `style` — which is what triggers the hydration
+ * mismatches documented in `app-widget.md` § Coordinates.
+ *
+ * ## What it does NOT do
+ *
+ * It does not follow `prefers-color-scheme`. A Javadaba surface's polarity is decided
+ * by the surfaces contract, not by the visitor's OS setting: the showcase is black for
+ * everyone and an invoice reads like paper. Two apps (Sonus and Fabula) were dragging
+ * along the `@media (prefers-color-scheme: dark)` left over from create-next-app, which
+ * meant their background depended on the OS setting instead of on their ficha.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   1. SCALES — the same across the whole ecosystem
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Radius. The reference is the landing (0.75rem base): the "md" step is the radius
+     of a content card and "pill" is the radius of the site's CTAs. There used to be
+     three different scales: 0.75rem (landing), 0.625rem (this layer), and hardcoded
+     4/8/12/16 px (curriculum, quaestio). */
+  --radius-jd-xs: 0.25rem;
+  --radius-jd-sm: 0.5rem;
+  /* The app control's corner (buttons, fields, rows in the app register). Sits between sm and md. */
+  --radius-jd-control: 0.625rem;
+  --radius-jd-md: 0.75rem;
+  --radius-jd-lg: 1rem;
+  /* Bento cell on a phone; `xl` is the bento cell on a large screen (Lib-Foundations § 05). */
+  --radius-jd-bento-m: 1.25rem;
+  --radius-jd-xl: 1.5rem;
+  --radius-jd-pill: 9999px;
+
+  /* Typography. The font families are published by `@javadaba/ui/fonts` (a single
+     instance of each, shared across the whole ecosystem); only the ROLES live here,
+     which is what a component asks for. See doc://contracts/design-system
+     § Voice. Three families only (JAVA-1861), five roles: Doto speaks for the house, Montserrat does
+     the work. The KICKER is Montserrat 700 in capitals (it is no longer the italic cut), and the
+     ITALIC role is Montserrat's italic: the line that breaks the rhythm. `serif` is the body face. */
+  --font-jd-display: var(--font-jd-display-src, ui-sans-serif, system-ui, sans-serif);
+  --font-jd-body: var(--font-jd-body-src, ui-sans-serif, system-ui, sans-serif);
+  --font-jd-kicker: var(--font-jd-body);
+  --font-jd-italic: var(--font-jd-body);
+  --font-jd-serif: var(--font-jd-body);
+  --font-jd-hand: var(--font-jd-hand-src, "Bradley Hand", cursive);
+
+  /* Motion. A single pair of curves for the whole ecosystem: the difference between
+     apps used to be that each one had picked its own duration (200 ms in Tributa,
+     620 ms in Quaestio, 300 ms in the landing) without any of them being an actual
+     decision. */
+  --ease-jd: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-jd-in: cubic-bezier(0.55, 0, 1, 0.45);
+
+  /* Enter and exit of a floating layer (dialog, popover, listbox). They live HERE, in the
+     system, because until 2026-09-22 the pieces asked for `animate-in`/`zoom-in-95` from
+     `tw-animate-css` — a plugin only the landing loads. In the other eleven surfaces those
+     classes were silent no-ops and every dialog appeared and vanished in one frame.
+
+     The exit is shorter than the entrance and uses the accelerating curve: what leaves is no
+     longer the subject, and making someone wait for it to go is making them wait twice.
+     Everything they move is `opacity` and `transform`, the two properties the compositor
+     animates without touching layout. See § 6 for the reduced-motion half. */
+  --animate-jd-fade-in: jd-fade-in var(--jd-dur-slow) var(--ease-jd) both;
+  --animate-jd-fade-out: jd-fade-out var(--jd-dur-base) var(--ease-jd-in) both;
+  --animate-jd-pop-in: jd-pop-in var(--jd-dur-slow) var(--ease-jd) both;
+  --animate-jd-pop-out: jd-pop-out var(--jd-dur-base) var(--ease-jd-in) both;
+  /* A panel that comes in from the edge it belongs to and goes back into it (the Javadaba menu,
+     at every width since JAVA-217): 28px of travel and a fade (Lib-Foundations § 07). Its
+     mirror serves a panel anchored to the LEFT edge (a navigation drawer on a phone). § 6 zeroes
+     the travel and leaves the fade. */
+  --animate-jd-slide-in-right: jd-slide-in-right var(--jd-dur-slow) var(--ease-jd) both;
+  --animate-jd-slide-out-right: jd-slide-out-right var(--jd-dur-base) var(--ease-jd-in) both;
+  --animate-jd-slide-in-left: jd-slide-in-left var(--jd-dur-slow) var(--ease-jd) both;
+  /* A dialog on a phone is a full-screen sheet (JAVA-59): it rises from the bottom edge and
+     goes back down into it, instead of scaling in place. `--jd-motion-edge` is its own height
+     this time; § 6 zeroes it and leaves the fade. */
+  --animate-jd-sheet-in: jd-sheet-in var(--jd-dur-slow) var(--ease-jd) both;
+  --animate-jd-sheet-out: jd-sheet-out var(--jd-dur-base) var(--ease-jd-in) both;
+  /* A bone's breath: a slow opacity pulse, 1.6 s (Lib-Display § Skeleton). */
+  --animate-jd-bone: jd-bone 1.6s ease-in-out infinite;
+  /* The halo behind a doodle drifts a few pixels and back (DoodleArt). Low mode and reduced motion stop it. */
+  --animate-jd-drift: jd-drift 9s ease-in-out infinite alternate;
+
+  @keyframes jd-fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes jd-fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes jd-pop-in {
+    from { opacity: 0; transform: scale(var(--jd-motion-scale)); }
+  }
+  @keyframes jd-pop-out {
+    to { opacity: 0; transform: scale(var(--jd-motion-scale)); }
+  }
+  @keyframes jd-slide-in-right {
+    from { opacity: 0; transform: translateX(var(--jd-motion-slide)); }
+  }
+  @keyframes jd-slide-out-right {
+    to { opacity: 0; transform: translateX(var(--jd-motion-slide)); }
+  }
+  @keyframes jd-slide-in-left {
+    from { opacity: 0; transform: translateX(calc(-1 * var(--jd-motion-slide))); }
+  }
+  @keyframes jd-bone {
+    50% { opacity: 0.5; }
+  }
+  @keyframes jd-drift {
+    to { transform: translate(10px, -8px) scale(1.06); }
+  }
+  @keyframes jd-sheet-in {
+    from { opacity: 0; transform: translateY(var(--jd-motion-edge)); }
+  }
+  @keyframes jd-sheet-out {
+    to { opacity: 0; transform: translateY(var(--jd-motion-edge)); }
+  }
+}
+
+:root {
+  /* Spacing: 4 px grid. */
+  --jd-space-1: 0.25rem;
+  --jd-space-2: 0.5rem;
+  --jd-space-3: 0.75rem;
+  --jd-space-4: 1rem;
+  --jd-space-6: 1.5rem;
+  --jd-space-8: 2rem;
+  --jd-space-12: 3rem;
+  --jd-space-16: 4rem;
+  --jd-space-24: 6rem;
+  --jd-space-30: 7.5rem;
+
+  /* Durations, one per job (`doc://contracts/design-system/motion`):
+     `instant` is the PRESS — the acknowledgement has to land inside ~100 ms or it reads
+     as lag, not as touch; `fast` is hover (color) and the control's own transitions; `base` is a
+     move (the 2 px lift) and every layer's exit; `slow` is a layer's enter (400 in, 250 out). */
+  --jd-dur-instant: 100ms;
+  --jd-dur-fast: 150ms;
+  --jd-dur-base: 250ms;
+  --jd-dur-slow: 400ms;
+
+  /* How far a thing travels on its way in. Zeroed under reduced motion (§ 6), which is what
+     turns every entrance into a plain fade instead of switching it off. `shift` is the scroll
+     reveal's rise (24 px), `slide` a panel from its side (28 px). */
+  --jd-motion-scale: 0.96;
+  --jd-motion-shift: 24px;
+  --jd-motion-slide: 28px;
+  --jd-motion-edge: 100%;
+
+  /* Credit, in US dollars (Tokens J are gone: owner answer X05). A MATERIAL, like a banknote, so it
+     is the same on every surface instead of following the theme (user mockup, 2026-09-27).
+     The ink on the fill is about 1.9:1: it is only ever decoration on the balance card, and
+     the balance a person reads is plain `--jd-ink` text under it (`AccountMenuRow`). */
+  --jd-currency: #ffcd66;
+  --jd-currency-ink: #ff7a06;
+
+  /* Status tones move into the tokens (Lib-Foundations § 08). Each is an INK and a TINT, fixed on
+     every surface on purpose: an error is the same red on the desktop and on an invoice. Every
+     tone also has a word and a shape of its own, so it reads in grayscale before the color helps. */
+  --jd-ok: #1e6b45;
+  --jd-ok-bg: #e3efe6;
+  --jd-warn: #9a4300;
+  --jd-warn-bg: #ffe6d1;
+  --jd-warn-solid: #ffb27a;
+  --jd-bad: #a1261e;
+  --jd-bad-bg: #f6e3e0;
+  --jd-info: #22508f;
+  --jd-info-bg: #e2eaf4;
+  /* The destructive fill (white ink on it) and its hover. */
+  --jd-danger: #a1261e;
+  --jd-danger-hover: #861f18;
+}
+
+/* The Javadaba menu's panel (`JavadabaMenu`) hangs off a sticky or fixed bar, so the page's own
+   scroll can never bring its bottom into view: capped at the viewport, it scrolls itself (and
+   a phone narrower than the panel keeps a gutter on both sides). Here
+   and not as a class on the piece because the cap is the WEB half's — viewport units have no
+   meaning on Android (`rules/native-portability.md` rule 4), where the menu is a native sheet. */
+[data-jd-menu-panel] {
+  max-width: calc(100vw - 2rem);
+  max-height: min(640px, calc(100dvh - 6rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   2. SURFACES — where background and ink come from
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Inks are mixed from ONE black, so an app never writes an alpha by hand. The alphas are for
+   contrast, measured on the product page (Lib-Foundations § 02): muted 74% reads 8.0:1, faint
+   64% reads 5.6:1 and is the floor for any text, control borders at 50% read 3.5:1 (WCAG
+   1.4.11), and the hairline at 8% is decoration, never the only edge of a control. The numbers are
+   in `doc://contracts/design-surfaces` § Measured contrast.
+
+   `--jd-line` and `--jd-control-border` are deliberately two different things: a
+   hairline that groups content is decoration and can be subtle; a button's border is
+   the only signal that a button is there.
+
+   A surface publishes EVERY token inside it, and surfaces nest: a dark island on a light page
+   carries its own ink. Polarity is decided by the surface, never by the visitor's system theme. */
+
+.jd-surface,
+[data-jd-surface] {
+  /* PRODUCT surface: the base theme. Washi ground, stone cards, white for the thing being
+     worked on. This is where you read, copy, and fill out a form. */
+  --jd-page: #fbfaf7;
+  --jd-card: #f2f1ec;
+  --jd-raised: #ffffff;
+  --jd-ink: #111111;
+  --jd-muted: rgba(17, 17, 17, 0.74);
+  --jd-faint: rgba(17, 17, 17, 0.64);
+  --jd-line: rgba(17, 17, 17, 0.08);
+  --jd-control-border: rgba(17, 17, 17, 0.5);
+  /* Focus ring on every control: ink, 2 px, offset 2 (18.1:1; the old 40% ring measured 2.6:1). */
+  --jd-focus: #111111;
+  /* Hover wash on a transparent control, the stone hover, the disabled fill and a skeleton bone. */
+  --jd-hover: rgba(17, 17, 17, 0.06);
+  --jd-card-hover: #e8e6df;
+  --jd-disabled: #ecebe6;
+  --jd-bone: #e8e6df;
+  --jd-solid-hover: #2a2a2a;
+  /* Sticky product bars and the website header: the page at 82%, blurred 16. */
+  --jd-nav-bg: rgba(251, 250, 247, 0.82);
+  /* Behind dialogs and sheets. */
+  --jd-scrim: rgba(17, 17, 17, 0.4);
+  /* How much of the ACCENT survives when used as INK. Against light it's cut back
+     toward black until the worst accent in the catalog passes AA; against dark it
+     comes through untouched. */
+  --jd-ink-mix: 58%;
+  /* Glass: against light the veil is white. */
+  --jd-glass-bg: rgba(255, 255, 255, 0.72);
+  --jd-glass-border: rgba(17, 17, 17, 0.1);
+  /* Frosted pane, blur 20 (Lib-Foundations § 06). The sticky bar blurs 16 and says so itself. */
+  --jd-glass-blur: 20px;
+  /* Elevation (Lib-Foundations § 06). Flat is no shadow at all (the bento cell). 1 = raised: white,
+     one soft pixel. 2 = a small float. 3 = lift: a card that goes somewhere, on hover. */
+  --jd-shadow-1: 0 1px 2px rgba(17, 17, 17, 0.06), 0 0 0 1px rgba(17, 17, 17, 0.04);
+  --jd-shadow-2: 0 4px 12px rgba(17, 17, 17, 0.08);
+  --jd-shadow-3: 0 12px 32px rgba(17, 17, 17, 0.12);
+  /* Overlay: menus, popovers, dialogs, toasts. A ring and one long shadow. */
+  --jd-shadow-overlay: 0 0 0 1px rgba(17, 17, 17, 0.12), 0 24px 70px rgba(17, 17, 17, 0.1);
+
+  color-scheme: light;
+}
+
+/* Product, variant Pure: a white page and neutral stone, for the surfaces that print or embed. */
+[data-jd-surface="product"][data-jd-variant="pure"] {
+  --jd-page: #ffffff;
+  --jd-card: #f3f3f3;
+  --jd-nav-bg: rgba(255, 255, 255, 0.82);
+}
+
+/* SHOWCASE surface: the ink island. Theater frames, the one card a chapter must remember, the
+   account menu over a light page. Black is the brand and the object shines. */
+[data-jd-surface="showcase"] {
+  --jd-page: #111111;
+  --jd-card: rgba(255, 255, 255, 0.06);
+  --jd-raised: #1c1c1c;
+  --jd-ink: #ffffff;
+  --jd-muted: rgba(255, 255, 255, 0.72);
+  --jd-faint: rgba(255, 255, 255, 0.62);
+  --jd-line: rgba(255, 255, 255, 0.1);
+  --jd-control-border: rgba(255, 255, 255, 0.5);
+  --jd-focus: #ffffff;
+  --jd-hover: rgba(255, 255, 255, 0.08);
+  --jd-card-hover: rgba(255, 255, 255, 0.1);
+  --jd-disabled: rgba(255, 255, 255, 0.1);
+  --jd-bone: rgba(255, 255, 255, 0.12);
+  --jd-solid-hover: rgba(255, 255, 255, 0.86);
+  --jd-nav-bg: rgba(17, 17, 17, 0.82);
+  --jd-scrim: rgba(0, 0, 0, 0.55);
+  --jd-ink-mix: 100%;
+  --jd-glass-bg: rgba(255, 255, 255, 0.06);
+  --jd-glass-border: rgba(255, 255, 255, 0.12);
+  --jd-glass-blur: 20px;
+  /* Against black a shadow doesn't show: elevation is expressed with the 1 px top light (8%). */
+  --jd-shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --jd-shadow-2: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --jd-shadow-3: 0 24px 70px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --jd-shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 24px 70px rgba(0, 0, 0, 0.75);
+
+  color-scheme: dark;
+}
+
+/* Documented exception: Sonus. Live radio keeps its own warm night (owner decision, kept). */
+[data-jd-surface="pulse"] {
+  --jd-page: #080504;
+  --jd-card: #17110d;
+  --jd-raised: #211812;
+  --jd-ink: #fff5e6;
+  --jd-muted: rgba(255, 245, 230, 0.72);
+  --jd-faint: rgba(255, 245, 230, 0.62);
+  --jd-line: rgba(255, 245, 230, 0.12);
+  --jd-control-border: rgba(255, 245, 230, 0.5);
+  --jd-focus: #fff5e6;
+  --jd-hover: rgba(255, 245, 230, 0.08);
+  --jd-card-hover: #211812;
+  --jd-disabled: rgba(255, 245, 230, 0.1);
+  --jd-bone: rgba(255, 245, 230, 0.12);
+  --jd-solid-hover: rgba(255, 245, 230, 0.86);
+  --jd-nav-bg: rgba(8, 5, 4, 0.82);
+  --jd-scrim: rgba(0, 0, 0, 0.6);
+  --jd-ink-mix: 100%;
+  --jd-glass-bg: rgba(255, 245, 230, 0.06);
+  --jd-glass-border: rgba(255, 245, 230, 0.12);
+  --jd-glass-blur: 20px;
+  --jd-shadow-1: inset 0 1px 0 rgba(255, 245, 230, 0.06);
+  --jd-shadow-2: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 245, 230, 0.08);
+  --jd-shadow-3: 0 24px 70px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 245, 230, 0.1);
+  --jd-shadow-overlay: 0 0 0 1px rgba(255, 245, 230, 0.12), 0 24px 70px rgba(0, 0, 0, 0.75);
+
+  color-scheme: dark;
+}
+
+/* The DESKTOP: Javadaba OS, graphite ground and frosted windows. Closed user decision
+   (2026-08-08): javadaba-web-os is dark by default and sits outside the light-background rule —
+   a desktop is an environment, not a page (the dark default is an owner decision still to confirm
+   in the redesign). */
+[data-jd-surface="desktop"] {
+  --jd-page: rgba(28, 28, 30, 0.96);
+  --jd-card: rgba(255, 255, 255, 0.06);
+  --jd-raised: rgba(44, 44, 46, 0.94);
+  --jd-ink: rgba(255, 255, 255, 0.92);
+  --jd-muted: rgba(255, 255, 255, 0.7);
+  --jd-faint: rgba(255, 255, 255, 0.62);
+  --jd-line: rgba(255, 255, 255, 0.12);
+  --jd-control-border: rgba(255, 255, 255, 0.5);
+  --jd-focus: #ffffff;
+  --jd-hover: rgba(255, 255, 255, 0.08);
+  --jd-card-hover: rgba(255, 255, 255, 0.1);
+  --jd-disabled: rgba(255, 255, 255, 0.1);
+  --jd-bone: rgba(255, 255, 255, 0.12);
+  --jd-solid-hover: rgba(255, 255, 255, 0.86);
+  --jd-nav-bg: rgba(30, 30, 30, 0.8);
+  --jd-scrim: rgba(0, 0, 0, 0.55);
+  --jd-ink-mix: 100%;
+  --jd-glass-bg: rgba(28, 28, 30, 0.82);
+  --jd-glass-border: rgba(255, 255, 255, 0.12);
+  --jd-glass-blur: 24px;
+  --jd-shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --jd-shadow-2: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --jd-shadow-3: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --jd-shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 24px 70px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+/* Focus: one ring for every control on every surface. In `base` so a component that has its own
+   (`focus-visible:outline-none` + a ring) still wins; a raw element gets this. */
+@layer base {
+  .jd-surface :focus-visible,
+  [data-jd-surface] :focus-visible {
+    outline: 2px solid var(--jd-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   3. APP ACCENT
+   ─────────────────────────────────────────────────────────────────────────────
+
+   The three stops are published by the consumer (`<Surface accent={...}>` or by
+   hand), and come from `@javadaba/brand` → `accentFor(slug)`, which is the single
+   source.
+
+   `--jd-accent` is the accent as FILL (chip, edge, button): it's passed through as-is,
+   because there the color IS the surface. `--jd-accent-ink` is the accent as INK
+   (text, icon): it's corrected with `--jd-ink-mix`, which the surface sets. The brand
+   gradients are chosen to shine against black; as text against white they only reach
+   1.4–2.5:1. */
+
+.jd-surface,
+[data-jd-surface] {
+  --jd-accent-start: currentColor;
+  --jd-accent-mid: currentColor;
+  --jd-accent-end: currentColor;
+  --jd-accent: var(--jd-accent-mid);
+  --jd-accent-ink: color-mix(in oklab, var(--jd-accent) var(--jd-ink-mix, 100%), #000);
+  /* The stop that CARRIES the brand and the same stop made visible on this surface. Both are
+     published by the consumer (`themeVars()` in `@javadaba/brand`), because neither can be
+     computed here: picking the most chromatic of three stops and lowering lightness at
+     constant chroma are OKLCH operations, and `color-mix` drains chroma along with lightness.
+     That is exactly why the accent period of a pale wordmark came out brown.
+
+     The fallbacks keep every surface that has not been migrated painting what it painted
+     before: the middle stop, and the text-grade ink. */
+  --jd-accent-vivid: var(--jd-accent-mid);
+  --jd-accent-mark: var(--jd-accent-ink);
+  /* The ink on a SOLID gradient fill (`Button variant="accent" fill="gradient"`): black or
+     white, whichever clears the most contrast on every stop (`gradientInk` in `@javadaba/brand`).
+     Black is the best answer for 38 of 39 slugs, so a surface that publishes nothing paints it. */
+  --jd-accent-gradient-on: #000;
+  --jd-accent-gradient: linear-gradient(
+    135deg,
+    var(--jd-accent-start),
+    var(--jd-accent-mid),
+    var(--jd-accent-end)
+  );
+  /* What a gradient BUTTON or solid badge paints (`buttonFill` in `@javadaba/brand`): the ramp deepened
+     until white reads on every stop (4.5:1), or one solid accent ink where the ramp cannot deepen without
+     losing its hue; the label is white. A surface that publishes nothing paints the raw ramp. */
+  --jd-accent-fill: var(--jd-accent-gradient);
+  --jd-accent-fill-on: var(--jd-accent-gradient-on);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   4. CANVAS AND BODY
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Scroll bounce paints `<html>`'s background, and `--jd-page` only exists inside the
+   surface: without this, a showcase page shows white bands when you overscroll. It's
+   the same fix the landing already had with `--site-bg`.
+
+   Scoped to `body[...]` on purpose: a dark ISLAND inside a light page (§5) must not
+   repaint the canvas — with the bare attribute selector, one showcase card on a
+   product page turned the whole overscroll black. */
+
+/* The canvas also carries the surface's color-scheme, with `only`: a phone browser that
+   force-darkens pages (Chrome Android auto-dark, Samsung Internet) decides from the ROOT
+   element, and without a declaration there it inverted the ink of controls that paint no
+   background of their own, so labels vanished (JAVA-124). */
+html:has(body[data-jd-surface]) {
+  color-scheme: only light;
+}
+html:has(body[data-jd-surface="showcase"]) {
+  background-color: #111111;
+  color-scheme: only dark;
+}
+html:has(body[data-jd-surface="pulse"]) {
+  background-color: #080504;
+  color-scheme: only dark;
+}
+html:has(body[data-jd-surface="desktop"]) {
+  background-color: #000000;
+  color-scheme: only dark;
+}
+
+/* A floating layer (a dialog, its scrim, a sheet) wears the surface's tokens but paints its own fill: the
+   translucent scrim and the raised white. Unlayered, this rule used to win over their utilities. */
+.jd-surface:not([data-jd-layer]),
+[data-jd-surface]:not([data-jd-layer]) {
+  background-color: var(--jd-page);
+  color: var(--jd-ink);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   5. ISLANDS
+   ─────────────────────────────────────────────────────────────────────────────
+
+   A light surface can contain a dark object and vice versa: that doesn't break the
+   rule — painting the PAGE that way would. An island is a nested `data-jd-surface`,
+   and through custom-property inheritance everything inside it recolors on its own.
+
+   Island rule: whoever sets the background also sets the ink. A container that fixes
+   `background` and lets the text inherit is a contrast bug waiting for someone to
+   change the theme. */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   6. MOTION
+   ─────────────────────────────────────────────────────────────────────────────
+
+   The contract — six jobs, which tool does each, and what nobody writes — is in
+   `doc://contracts/design-system/motion`. What lives here is the part CSS can do on
+   its own, which is most of it. */
+
+/* Reduced motion means LESS motion, not none: travel goes to zero and the fade stays, so a
+   dialog still arrives instead of teleporting. The floating layers portal to <body>, outside
+   any surface, so the blanket rule below does not reach them — these two variables do. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --jd-motion-scale: 1;
+    --jd-motion-shift: 0px;
+    --jd-motion-edge: 0px;
+  }
+}
+
+/* Scroll reveal: a block rises ONCE and never again on the way back up (Lib-Foundations 07).
+
+   `<Reveal>` (`@javadaba/ui/motion`) sets `data-jd-reveal` after hydration and only on a block that
+   starts below the fold: the server renders everything visible, so a crawler, a page without
+   JavaScript and the first screen are never blank. `pending` waits one rise away; `done` is
+   released by an IntersectionObserver and animates to rest. Under reduced motion the shift is 0,
+   so the same rule is a fade. (The CSS `view()` timeline this replaces ran backwards on scroll-up.) */
+[data-jd-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(var(--jd-motion-shift));
+}
+
+[data-jd-reveal="done"] {
+  transition:
+    opacity var(--jd-dur-slow) var(--ease-jd),
+    transform var(--jd-dur-slow) var(--ease-jd);
+}
+
+/* Low mode (Lib-Foundations 07, Lib-Calendar "Visual performance"): grain, blur and drift switch off,
+   the layout and every word stay. `data-capability` is stamped by an app's shell from
+   `useVisualPerformance()` (reduced motion, a slow device, a software renderer). The glass is
+   restated on every surface because each one declares its own blur; the sticky bar becomes a solid pane. */
+[data-capability="low"],
+[data-capability="low"] [data-jd-surface],
+[data-jd-surface][data-capability="low"] {
+  --jd-glass-blur: 0px;
+  --jd-nav-bg: var(--jd-page);
+}
+
+[data-capability="low"] .jd-accent-noise {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jd-surface *,
+  [data-jd-surface] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   7. COMPATIBILITY — `.jdui`
+   ─────────────────────────────────────────────────────────────────────────────
+
+   `.jdui` used to be the scope of the dark shadcn layer that `javadaba-web-os`
+   (WallpaperPicker, Marketplace) and the Creatio builder primitives still consume
+   today. It's kept as an ALIAS of the desktop surface so they don't break in the same
+   change that introduces the system: they still resolve `--card`, `--popover`, etc.,
+   but those values now DERIVE from the surface tokens instead of being duplicated by
+   hand.
+
+   Declared debt: once the four consumers migrate to `data-jd-surface="desktop"` + the
+   new primitives, this block gets deleted. */
+
+.jdui {
+  --background: var(--jd-page, rgba(28, 28, 30, 0.96));
+  --foreground: var(--jd-ink, rgba(255, 255, 255, 0.92));
+  /* The shadcn token is called `--accent`, not `--accent-color`. It was misspelled
+     until 2026-08-11, and the consequence was concrete: `bg-accent` painted nothing,
+     and `Toggle` — the only primitive in the package that used it — couldn't tell the
+     pressed state from the normal one on a light surface. `--accent-color` also gets
+     confused with the CSS property of the same name, which is something else
+     entirely. */
+  --accent: rgba(255, 255, 255, 0.1);
+
+  --card: var(--jd-page, rgba(28, 28, 30, 0.96));
+  --card-foreground: var(--jd-ink, rgba(255, 255, 255, 0.92));
+  --popover: rgba(40, 40, 42, 0.98);
+  --popover-foreground: var(--jd-ink, rgba(255, 255, 255, 0.92));
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-foreground: var(--jd-ink, rgba(255, 255, 255, 0.92));
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: var(--jd-muted, rgba(255, 255, 255, 0.5));
+  --accent-foreground: var(--jd-ink, rgba(255, 255, 255, 0.92));
+  --destructive: #ff453a;
+  --destructive-foreground: #ffffff;
+  --border: var(--jd-line, rgba(255, 255, 255, 0.12));
+  --input: rgba(255, 255, 255, 0.18);
+  --ring: rgba(255, 255, 255, 0.4);
+}
+
+/* `.jdui` without a surface declared above still has to stay dark: that's what
+   happens today in the Marketplace, which applies it to a bare `div`. */
+.jdui:not([data-jd-surface]):not(.jd-surface) {
+  --jd-page: rgba(28, 28, 30, 0.96);
+  --jd-card: rgba(255, 255, 255, 0.06);
+  --jd-raised: rgba(44, 44, 46, 0.94);
+  --jd-focus: #ffffff;
+  --jd-hover: rgba(255, 255, 255, 0.08);
+  --jd-card-hover: rgba(255, 255, 255, 0.1);
+  --jd-disabled: rgba(255, 255, 255, 0.1);
+  --jd-bone: rgba(255, 255, 255, 0.12);
+  --jd-solid-hover: rgba(255, 255, 255, 0.86);
+  --jd-scrim: rgba(0, 0, 0, 0.55);
+  --jd-shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 24px 70px rgba(0, 0, 0, 0.55);
+  --jd-ink: rgba(255, 255, 255, 0.92);
+  --jd-muted: rgba(255, 255, 255, 0.7);
+  --jd-faint: rgba(255, 255, 255, 0.62);
+  --jd-line: rgba(255, 255, 255, 0.12);
+  --jd-control-border: rgba(255, 255, 255, 0.5);
+  --jd-ink-mix: 100%;
+  --jd-glass-bg: rgba(28, 28, 30, 0.82);
+  --jd-glass-border: rgba(255, 255, 255, 0.12);
+  --jd-glass-blur: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   7bis. shadcn BRIDGE — the names the Radix primitives expect
+   ─────────────────────────────────────────────────────────────────────────────
+
+   The ten shadcn-derived primitives in `src/ui/` (dialog, tabs, slider, switch,
+   toggle, scroll-area, separator, label, input) are written against shadcn's names
+   (`--card`, `--popover`, `--ring`…). Deriving them from the surface tokens — instead
+   of leaving them nailed to the dark palette, which is how they used to be — is what
+   makes those ten components work as-is across all FOUR surfaces without touching a
+   single line of their code.
+
+   It's a bridge, not a second source: there isn't a single color here, only
+   references. */
+
+[data-jd-surface] {
+  --background: var(--jd-page);
+  --foreground: var(--jd-ink);
+  --card: var(--jd-card);
+  --card-foreground: var(--jd-ink);
+  --popover: var(--jd-raised);
+  --popover-foreground: var(--jd-ink);
+  --primary: var(--jd-ink);
+  --primary-foreground: var(--jd-page);
+  --secondary: var(--jd-card);
+  --secondary-foreground: var(--jd-ink);
+  --muted: var(--jd-card);
+  --muted-foreground: var(--jd-muted);
+  /* The kit bridge hands "accent" the product accent. Mixed into the page so a surface that
+     publishes no accent (which paints currentColor) gets a harmless wash instead of ink on ink. */
+  --accent: color-mix(in oklab, var(--jd-accent, currentColor) 22%, var(--jd-page));
+  --accent-foreground: var(--jd-ink);
+  --destructive: var(--jd-danger);
+  --destructive-foreground: #ffffff;
+  --border: var(--jd-line);
+  --input: var(--jd-control-border);
+  --ring: var(--jd-focus);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   8. COMPONENT MATERIALS
+   ─────────────────────────────────────────────────────────────────────────────
+
+   What doesn't fit in a utility class: masks, bevels, and stacked layers. They live
+   here instead of in each app because they're the shared recipe — if the material
+   changes, it changes in one place (`doc://contracts/app-widget` § Accent
+   surface is the source of truth for the recipe). */
+
+/* The accent surface: gradient + grain + bevel. See src/ui/accent-surface.tsx.
+   `position` does NOT go here: the component sets it as a Tailwind utility, so a
+   caller asking for `absolute` wins. Written in this sheet it always won instead —
+   out-of-layer sheet beats a utility in `@layer utilities` — leaving the surface at
+   height 0. */
+.jd-accent {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* The inner bottom bevel is what gives the piece its EDGE: without it the piece is
+   just a colored rectangle, not an object. The percentage scales with the piece. */
+.jd-accent-bevel {
+  box-shadow: inset 0 -6.8% 7.7% rgba(185, 185, 185, 0.25);
+}
+
+.jd-accent-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* The color shows THROUGH the grain: the noise lives in the mask's alpha channel. */
+.jd-accent-noise-layer {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-size: 64px 64px;
+  mask-size: 64px 64px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+/* The stage: the surface's canvas and the veil that keeps the content readable over
+   the light coming through it. See src/ui/theater.tsx. The veil is what guarantees the
+   text stays readable when the cover that supplies the ambient color turns out to be
+   nearly white.
+
+   The three radial lights of `.jd-theater-ambient`, the `.jd-theater` container, and
+   its `.jd-theater-content` were removed on 2026-08-11: invented light (axis 1 of
+   art-direction.md) and a wrapper with zero consumers. */
+
+/* The background layer group. It's kept separate (`TheaterAmbient`) so a stage that
+   already has its own first two layers can swap them out without touching the rest of
+   the stack. */
+.jd-theater-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.jd-theater-canvas {
+  position: absolute;
+  inset: 0;
+  background-color: var(--jd-page);
+}
+
+/* The veil: without it, a light cover leaves the text at 2:1. It's the difference
+   between a stage and a pretty background you can't actually use. */
+.jd-theater-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--jd-page) 35%, transparent),
+    color-mix(in oklab, var(--jd-page) 78%, transparent)
+  );
+}
+
+@theme inline {
+  /* `background` and `foreground` were the two names the bridge PUBLISHED above and never
+     registered here, so `bg-background` generated no class at all. Every app that happened to
+     declare them in its own `@theme` (Curriculum, Sonus, Fabula, Creatio, Quaestio, Aura, the
+     landing, the desktop) never noticed; Officium did not, and `DialogContent` -- whose panel IS
+     `bg-background` -- rendered with no fill, text straight over the page behind it (reported
+     2026-09-15, an a11y failure, not a style one). An app's own declaration still wins: it comes
+     after this import. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Radius: Tailwind's names resolved onto the ecosystem's five steps, HERE and
+     nowhere else.
+
+     Until 2026-08-27 every surface remapped these on its own and they disagreed:
+     `rounded-md` was 10px in this layer, 8px in Curriculum and 8px hardcoded in
+     Quaestio — the same class name, two different radii depending on which app you
+     were in. Worse, `2xl` and `3xl` were remapped NOWHERE, so 204 uses (including
+     every glass card in the desktop) sat on Tailwind's default scale and no token
+     could reach them.
+
+     Eight names over five steps means some of them coincide. That is not a gap, it
+     is what a CLOSED scale is: the system offers five radii and Tailwind's vocabulary
+     maps onto them, instead of the vocabulary inventing values the system never chose.
+     The collisions were placed where nothing moves — `lg`, `xl`, `2xl`, `3xl` and
+     `full` keep their exact current value across 1,261 of the 1,417 uses. */
+  --radius-xs: var(--radius-jd-xs); /* 4px */
+  --radius-sm: var(--radius-jd-xs); /* 4px */
+  --radius-md: var(--radius-jd-sm); /* 8px */
+  --radius-lg: var(--radius-jd-md); /* 12px */
+  --radius-xl: var(--radius-jd-lg); /* 16px */
+  --radius-2xl: var(--radius-jd-lg); /* 16px */
+  --radius-3xl: var(--radius-jd-xl); /* 24px */
+  --radius-4xl: var(--radius-jd-xl); /* 24px */
+  --radius-full: var(--radius-jd-pill);
+}
+
+/* ── Affordance floor ────────────────────────────────────────────────────────
+   Tailwind v4 aligned <button> with the browser's default cursor
+   (cursor: default). Here, anything clickable IS SIGNALED: it's cognitive
+   floor for the system (interface-psychology §affordances), not a
+   per-app opinion. Global on purpose, outside the .jdui scope: it also
+   applies to a raw button that doesn't go through a system piece. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+  cursor: pointer;
+}

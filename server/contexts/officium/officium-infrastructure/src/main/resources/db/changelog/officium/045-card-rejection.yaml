@@ -1,0 +1,17 @@
+databaseChangeLog:
+  # JAVA-1415: a rejected card keeps why it was rejected, where it can be searched and counted: the reason from the
+  # closed list, the note saying what was wrong, and the card it names. A rejected card always has a reason. Expand
+  # only: the previous release never writes `rejected`, so it ignores the three columns and cannot break the check.
+  - changeSet:
+      id: 045-card-rejection
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card add column if not exists rejection_reason text;
+              alter table officium_card add column if not exists rejection_note text;
+              alter table officium_card add column if not exists rejection_card_id uuid;
+              alter table officium_card drop constraint if exists officium_card_rejected_has_reason;
+              alter table officium_card add constraint officium_card_rejected_has_reason
+                check (status <> 'rejected' or rejection_reason is not null);

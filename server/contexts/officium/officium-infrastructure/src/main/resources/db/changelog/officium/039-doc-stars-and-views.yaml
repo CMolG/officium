@@ -1,0 +1,42 @@
+databaseChangeLog:
+  # JAVA-799: a person's own navigation of the documentation. Both tables are the caller's alone, and
+  # both point at an ID, never a path, so a move or a rename leaves them standing. Expand only.
+  #
+  # A collection (a depth-1 node) can have no overview page, so a collection star needs something to
+  # hold: the node gets an id. Existing rows take one from the default (evaluated per row).
+  - changeSet:
+      id: 039-doc-stars-and-views
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_node add column if not exists id uuid not null default gen_random_uuid();
+              create unique index if not exists uq_officium_doc_node_id on officium_doc_node (id);
+
+              create table if not exists officium_doc_star (
+                id uuid primary key default gen_random_uuid(),
+                project_id uuid not null references officium_project(id) on delete cascade,
+                account_id uuid not null,
+                page_id uuid references officium_doc_page(id) on delete cascade,
+                node_id uuid references officium_doc_node(id) on delete cascade,
+                position int not null,
+                created_at timestamptz not null default now(),
+                check ((page_id is null) <> (node_id is null))
+              );
+              create unique index if not exists uq_officium_doc_star_page
+                on officium_doc_star (account_id, page_id) where page_id is not null;
+              create unique index if not exists uq_officium_doc_star_node
+                on officium_doc_star (account_id, node_id) where node_id is not null;
+              create index if not exists ix_officium_doc_star_order
+                on officium_doc_star (project_id, account_id, position);
+
+              create table if not exists officium_doc_view (
+                account_id uuid not null,
+                page_id uuid not null references officium_doc_page(id) on delete cascade,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                viewed_at timestamptz not null,
+                primary key (account_id, page_id)
+              );
+              create index if not exists ix_officium_doc_view_recent
+                on officium_doc_view (project_id, account_id, viewed_at desc);

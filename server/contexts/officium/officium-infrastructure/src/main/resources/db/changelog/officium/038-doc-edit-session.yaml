@@ -1,0 +1,18 @@
+databaseChangeLog:
+  # JAVA-796: the editing session a page's last checkpoint opened. Autosaves of one session by one
+  # author, within 5 minutes of that checkpoint, keep no history version and record no activity.
+  # One row per page, gone with the page. Expand only: the previous release ignores the table, and
+  # a write it makes simply leaves the row behind, which the next checkpoint replaces.
+  - changeSet:
+      id: 038-doc-edit-session
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_edit_session (
+                page_id uuid primary key references officium_doc_page(id) on delete cascade,
+                session_id text not null,
+                author jsonb not null,
+                checkpoint_at timestamptz not null
+              );

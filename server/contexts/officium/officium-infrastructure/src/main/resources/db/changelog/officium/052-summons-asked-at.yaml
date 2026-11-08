@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # The last time an agent sent a summons, whatever the answer: the modal shows only while an agent is still asking.
+  # Expand only: a nullable column the previous release ignores; a row without it reads as asked when summoned.
+  - changeSet:
+      id: 052-summons-asked-at
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: alter table officium_summons add column if not exists asked_at timestamptz;
+      rollback:
+        - sql:
+            sql: alter table officium_summons drop column if exists asked_at;

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  # JAVA-391: a spike carries its subtype (`technical` or `ux-ui`) as a field, and the role matrix
+  # reads it instead of guessing ux-ui from the `touches-ui` signal. The backfill keeps every card's
+  # roles as they were: a spike carrying `touches-ui` is ux-ui, every other spike technical. Off a
+  # spike the column stays null. Expand only: the previous release neither reads nor writes it, and
+  # the domain reads a spike with none as technical.
+  - changeSet:
+      id: 024-card-spike-subtype
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card add column if not exists subtype text
+                constraint officium_card_subtype_check check (subtype in ('technical', 'ux-ui'));
+              update officium_card
+                 set subtype = case when 'touches-ui' = any(signals) then 'ux-ui' else 'technical' end
+               where category = 'spike' and subtype is null;
+      rollback:
+        - sql:
+            sql: alter table officium_card drop column if exists subtype;

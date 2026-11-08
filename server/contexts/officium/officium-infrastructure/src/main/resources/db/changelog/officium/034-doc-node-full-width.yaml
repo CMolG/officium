@@ -1,0 +1,11 @@
+databaseChangeLog:
+  # JAVA-795: full width is a page's LAYOUT, so it lives on the node (versioned on its own, written
+  # sparsely, follows a move), not on the page: toggling it is never a content version.
+  - changeSet:
+      id: 034-doc-node-full-width
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_node add column if not exists full_width boolean not null default false;

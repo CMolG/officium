@@ -1,0 +1,737 @@
+{
+  "categories": {
+    "epic": {
+      "refine": [
+        "product-analyst",
+        "software-architect",
+        "tech-lead"
+      ],
+      "action": [],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "architecture-reviewer",
+        "acceptance-qa"
+      ],
+      "deploy": [
+        "release-manager"
+      ]
+    },
+    "feature": {
+      "refine": [
+        "product-analyst",
+        "software-architect",
+        "tech-lead",
+        "ux-ui-designer",
+        "qa-strategist"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer",
+        "data-engineer",
+        "platform-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer",
+        "acceptance-qa",
+        "ux-ui-accessibility-reviewer"
+      ],
+      "deploy": [
+        "release-manager",
+        "post-deploy-verifier",
+        "production-watcher-sre"
+      ]
+    },
+    "userStory": {
+      "refine": [
+        "product-analyst",
+        "ux-ui-designer",
+        "tech-lead",
+        "qa-strategist"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "acceptance-qa",
+        "code-reviewer",
+        "ux-ui-accessibility-reviewer"
+      ],
+      "deploy": [
+        "post-deploy-verifier"
+      ]
+    },
+    "enhancement": {
+      "refine": [
+        "product-analyst",
+        "tech-lead",
+        "ux-ui-designer"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer",
+        "acceptance-qa",
+        "performance-reviewer"
+      ],
+      "deploy": [
+        "post-deploy-verifier"
+      ]
+    },
+    "bug": {
+      "refine": [
+        "incident-analyst",
+        "tech-lead"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer",
+        "data-engineer",
+        "test-automation-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer",
+        "acceptance-qa"
+      ],
+      "deploy": [
+        "post-deploy-verifier"
+      ]
+    },
+    "hotfix": {
+      "refine": [
+        "incident-analyst"
+      ],
+      "action": [
+        "on-call-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer"
+      ],
+      "deploy": [
+        "release-manager",
+        "post-deploy-verifier",
+        "production-watcher-sre"
+      ]
+    },
+    "regression": {
+      "refine": [
+        "incident-analyst",
+        "tech-lead"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer",
+        "test-automation-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer",
+        "performance-reviewer",
+        "acceptance-qa"
+      ],
+      "deploy": [
+        "post-deploy-verifier",
+        "production-watcher-sre"
+      ]
+    },
+    "refactor": {
+      "refine": [
+        "software-architect",
+        "tech-lead"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer",
+        "data-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "architecture-reviewer",
+        "code-reviewer",
+        "performance-reviewer"
+      ],
+      "deploy": [
+        "production-watcher-sre"
+      ]
+    },
+    "technicalDebt": {
+      "refine": [
+        "software-architect",
+        "tech-lead"
+      ],
+      "action": [
+        "backend-developer",
+        "frontend-developer",
+        "data-engineer",
+        "platform-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "architecture-reviewer",
+        "code-reviewer",
+        "performance-reviewer"
+      ],
+      "deploy": [
+        "post-deploy-verifier",
+        "production-watcher-sre"
+      ]
+    },
+    "infrastructure": {
+      "refine": [
+        "platform-architect",
+        "security-architect"
+      ],
+      "action": [
+        "platform-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer",
+        "security-reviewer",
+        "performance-reviewer"
+      ],
+      "deploy": [
+        "release-manager",
+        "production-watcher-sre"
+      ]
+    },
+    "security": {
+      "refine": [
+        "security-architect",
+        "tech-lead"
+      ],
+      "action": [
+        "security-engineer",
+        "backend-developer",
+        "frontend-developer",
+        "platform-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "security-reviewer",
+        "code-reviewer"
+      ],
+      "deploy": [
+        "release-manager",
+        "production-watcher-sre"
+      ]
+    },
+    "spike": {
+      "refine": [
+        "tech-lead",
+        "software-architect"
+      ],
+      "action": [
+        "technical-researcher"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "findings-evaluator",
+        "architecture-reviewer"
+      ],
+      "deploy": []
+    },
+    "testing": {
+      "refine": [
+        "qa-strategist",
+        "tech-lead"
+      ],
+      "action": [
+        "test-automation-engineer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer"
+      ],
+      "deploy": []
+    },
+    "routine": {
+      "refine": [],
+      "action": [
+        "routine-operator"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "code-reviewer"
+      ],
+      "deploy": [
+        "post-deploy-verifier",
+        "production-watcher-sre"
+      ]
+    },
+    "documentation": {
+      "refine": [
+        "tech-lead",
+        "product-analyst"
+      ],
+      "action": [
+        "technical-writer"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "documentation-reviewer"
+      ],
+      "deploy": [
+        "release-manager"
+      ]
+    },
+    "spike/ux-ui": {
+      "refine": [
+        "ux-ui-designer",
+        "product-analyst"
+      ],
+      "action": [
+        "ux-ui-designer",
+        "ux-researcher"
+      ],
+      "ready": [
+        "delivery-analyst"
+      ],
+      "review": [
+        "findings-evaluator",
+        "ux-ui-accessibility-reviewer"
+      ],
+      "deploy": []
+    }
+  },
+  "signals": {
+    "touches-auth-permissions-or-personal-data": {
+      "refine": [
+        "security-architect"
+      ],
+      "action": [],
+      "review": [
+        "security-reviewer"
+      ]
+    },
+    "touches-ui": {
+      "refine": [
+        "ux-ui-designer"
+      ],
+      "action": [],
+      "review": [
+        "ux-ui-accessibility-reviewer"
+      ]
+    },
+    "touches-hot-paths-or-heavy-queries": {
+      "refine": [],
+      "action": [],
+      "review": [
+        "performance-reviewer"
+      ]
+    },
+    "touches-data-schema": {
+      "refine": [],
+      "action": [
+        "data-engineer"
+      ],
+      "review": []
+    },
+    "touches-infrastructure": {
+      "refine": [
+        "platform-architect"
+      ],
+      "action": [
+        "platform-engineer"
+      ],
+      "review": []
+    }
+  },
+  "runs": {
+    "workflow": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "max"
+      }
+    },
+    "epic": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "feature": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "userStory": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "enhancement": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "bug": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "hotfix": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "regression": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "refactor": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "technicalDebt": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "infrastructure": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "security": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "spike": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "testing": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "routine": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "documentation": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    },
+    "spike/ux-ui": {
+      "refine": {
+        "model": "claude-opus-5-5",
+        "effort": "xhigh"
+      },
+      "action": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "ready": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "review": {
+        "model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "deploy": {
+        "model": "claude-sonnet-5-5",
+        "effort": "medium"
+      }
+    }
+  }
+}

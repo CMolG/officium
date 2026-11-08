@@ -1,0 +1,11 @@
+databaseChangeLog:
+  # JAVA-803: the people who edited a documentation page live in a room beside the one who saved it. Expand
+  # only: a nullable-by-default column the previous release ignores, with `[]` for every page written before.
+  - changeSet:
+      id: 043-doc-co-authors
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_page add column if not exists co_authors jsonb not null default '[]'::jsonb;

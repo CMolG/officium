@@ -1,0 +1,18 @@
+databaseChangeLog:
+  # JAVA-1820: a project's integration gate, the three rules that stop the autoloop when work waits on a branch
+  # nobody merged. One row per project, the rules replaced under their version. Expand only: a new table the
+  # previous release ignores, and a project with no row keeps today's behavior (every rule off).
+  - changeSet:
+      id: 061-project-integration-gate
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_project_integration_gate (
+                project_id uuid primary key references officium_project (id) on delete cascade,
+                rules jsonb not null,
+                version integer not null,
+                updated_at timestamptz not null,
+                updated_by jsonb
+              );

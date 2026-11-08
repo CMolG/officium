@@ -1,0 +1,22 @@
+databaseChangeLog:
+  # JAVA-778: one-time codes for a bulk documentation import. The MCP mints one per import; the
+  # script writes and reads the project's pages with it, then closes it. Only the hash is kept, and
+  # a code goes with its project. Expand only: a new table nothing in the running release reads.
+  - changeSet:
+      id: 022-doc-import-codes
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_import_code (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                account_id uuid not null,
+                code_hash text not null unique,
+                expires_at timestamptz not null,
+                closed_at timestamptz,
+                created_at timestamptz not null
+              );
+              create index if not exists ix_officium_doc_import_code_project
+                on officium_doc_import_code (project_id);

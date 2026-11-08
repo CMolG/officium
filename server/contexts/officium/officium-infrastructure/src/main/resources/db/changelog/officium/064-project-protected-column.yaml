@@ -1,0 +1,14 @@
+databaseChangeLog:
+  # JAVA-1853: a project can be protected, and a protected project is never deleted and never changes owner.
+  # Expand only: a column with a default, which the previous release's SELECT list never names. The value is set
+  # by a changeset alone (066 for Javadaba's own project); no request, operation or screen reaches it.
+  - changeSet:
+      id: 064-project-protected-column
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: alter table officium_project add column if not exists protected boolean not null default false;
+      rollback:
+        - sql:
+            sql: alter table officium_project drop column if exists protected;

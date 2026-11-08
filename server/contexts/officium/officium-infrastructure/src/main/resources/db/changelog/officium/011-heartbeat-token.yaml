@@ -1,0 +1,16 @@
+databaseChangeLog:
+  # JAVA-186: the token an account's harness beats with, so a hook can keep a live agent session
+  # alive without the model spending a turn on it. One hash per account, never the token; purged
+  # with the account (JdbcOfficiumAccountData).
+  - changeSet:
+      id: 011-heartbeat-token
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_heartbeat_token (
+                account_id uuid primary key,
+                token_hash text not null unique,
+                created_at timestamptz not null
+              );

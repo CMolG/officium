@@ -1,0 +1,19 @@
+{
+  "name": "@javadaba/analytics",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Officium Local stand-in for the ecosystem analytics: Local sends no telemetry, so every export is a no-op.",
+  "type": "module",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:"
+  }
+}

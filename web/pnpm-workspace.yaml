@@ -1,0 +1,87 @@
+packages:
+  - "packages/*"
+  - "packages/apps/officium"
+
+catalog:
+  "@dnd-kit/core": ^6.3.1
+  "@dnd-kit/sortable": ^10.0.0
+  "@dnd-kit/utilities": ^3.2.2
+  "@next/eslint-plugin-next": ^16.3.8
+  "@playwright/test": 1.64.0
+  "@radix-ui/react-progress": ^1.1.17
+  "@radix-ui/react-separator": ^1.1.16
+  "@radix-ui/react-slot": ^1.4.0
+  "@tailwindcss/postcss": ^4.3.3
+  "@testing-library/react": ^16.3.3
+  "@tiptap/core": 3.31.3
+  "@tiptap/extension-character-count": 3.31.3
+  "@tiptap/extension-code-block": 3.31.3
+  "@tiptap/extension-collaboration": 3.31.3
+  "@tiptap/extension-collaboration-caret": 3.31.3
+  "@tiptap/extension-color": 3.31.3
+  "@tiptap/extension-highlight": 3.31.3
+  "@tiptap/extension-horizontal-rule": 3.31.3
+  "@tiptap/extension-image": 3.31.3
+  "@tiptap/extension-link": 3.31.3
+  "@tiptap/extension-placeholder": 3.31.3
+  "@tiptap/extension-subscript": 3.31.3
+  "@tiptap/extension-superscript": 3.31.3
+  "@tiptap/extension-table": 3.31.3
+  "@tiptap/extension-table-cell": 3.31.3
+  "@tiptap/extension-table-header": 3.31.3
+  "@tiptap/extension-table-row": 3.31.3
+  "@tiptap/extension-task-item": 3.31.3
+  "@tiptap/extension-task-list": 3.31.3
+  "@tiptap/extension-text-align": 3.31.3
+  "@tiptap/extension-text-style": 3.31.3
+  "@tiptap/extension-typography": 3.31.3
+  "@tiptap/extension-underline": 3.31.3
+  "@tiptap/markdown": 3.31.3
+  "@tiptap/pm": 3.31.3
+  "@tiptap/react": 3.31.3
+  "@tiptap/starter-kit": 3.31.3
+  "@tiptap/static-renderer": 3.31.3
+  "@tiptap/suggestion": 3.31.3
+  "@tiptap/y-tiptap": 3.0.9
+  "@types/node": ^22.20.4
+  "@types/qrcode": ^1.5.6
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
+  "@vitejs/plugin-react": ^6.1.1
+  "babel-plugin-react-compiler": ^1.0.0
+  "class-variance-authority": ^0.7.1
+  "clsx": ^2.1.1
+  "eslint": ^9.39.5
+  "eslint-config-next": ^16.3.8
+  "eslint-plugin-react-hooks": ^6.1.1
+  "jsdom": ^30.1.1
+  "lucide-react": ^1.47.0
+  "mermaid": ^11.16.0
+  "next": ^16.3.8
+  "postcss": ^8.5.28
+  "qrcode": ^1.5.4
+  "react": ^19.3.0
+  "react-dom": ^19.3.0
+  "sharp": ^0.35.4
+  "tailwind-merge": ^3.7.0
+  "tailwindcss": ^4.3.3
+  "typescript": ^5.9.3
+  "typescript-eslint": ^8.70.1
+  "vite": ^8.3.0
+  "vitest": ^4.1.11
+  "y-protocols": ^1.0.7
+  "yjs": ^13.6.33
+
+overrides:
+  "@radix-ui/react-dismissable-layer": 1.1.20
+  prosemirror-model: 1.25.12
+  prosemirror-view: 1.42.5
+
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+patchedDependencies:
+  "@radix-ui/react-dismissable-layer@1.1.20": patches/@radix-ui__react-dismissable-layer@1.1.20.patch

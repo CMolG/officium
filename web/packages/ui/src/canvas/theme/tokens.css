@@ -1,0 +1,61 @@
+/*
+ * packages/ui/src/canvas/theme/tokens.css
+ *
+ * Daba Engine design tokens (Lib-Canvas, "Quiet Bento"). The engine draws no nodes of its own:
+ * it gives apps a field, selection, guides and tools, and all of it wears the house's tokens. Each
+ * name below is an alias of a `--jd-*` token, with the design's own value as fallback for the
+ * playground that mounts the engine outside a Surface. A consumer (Fluxor, Creatio) can still
+ * override any variable in its own :root without touching the engine.
+ *
+ *   field      -> --jd-page      (washi, the paper the dots sit on)
+ *   panel      -> --jd-raised  (white, with a ring and the overlay shadow)
+ *   ink        -> --jd-ink      (selection, pressed tools, the marquee)
+ *   the mark   -> --jd-accent  (alignment guides take the app's own color)
+ *
+ * No `prefers-color-scheme` block: the `--jd-*` tokens already switch with the surface's theme.
+ */
+
+:root {
+  /* Surface / border / text */
+  --daba-field: var(--jd-page, #fbfaf7);
+  --daba-surface: var(--jd-raised, #ffffff);
+  --daba-surface-muted: var(--jd-card, #f2f1ec);
+  --daba-border: var(--jd-line, rgba(17, 17, 17, 0.12));
+  --daba-text: var(--jd-ink, #111111);
+  --daba-text-muted: var(--jd-muted, rgba(17, 17, 17, 0.64));
+
+  /* Ink: selection, pressed tools, the primary action. Handles are white with an ink edge. */
+  --daba-accent: var(--jd-ink, #111111);
+  --daba-accent-contrast: var(--jd-raised, #ffffff);
+  --daba-handle: var(--jd-raised, #ffffff);
+  --daba-focus: var(--jd-focus, #111111);
+  --daba-hover: var(--jd-hover, rgba(17, 17, 17, 0.06));
+  --daba-highlight: var(--jd-accent, #111111);
+  --daba-danger: var(--jd-danger, #c0392b);
+
+  /* Radii */
+  --daba-radius-sm: 8px;
+  --daba-radius-md: 12px;
+  --daba-radius-lg: 18px;
+
+  /* Chrome (dock, panels, menus, hud): opaque raised panes with a hairline ring, no glass */
+  --daba-chrome-blur: 0px;
+  --daba-chrome-surface: var(--jd-raised, #ffffff);
+  --daba-chrome-shadow: var(--jd-shadow-overlay, 0 0 0 1px rgba(17, 17, 17, 0.12), 0 24px 70px rgba(17, 17, 17, 0.1));
+
+  /* Dotted background */
+  --daba-dot-color: rgba(17, 17, 17, 0.22);
+
+  /* Alignment guides take the app's mark */
+  --daba-guide-color: var(--jd-accent, var(--daba-highlight));
+
+  /* Selection marquee: ink, never the app's color */
+  --daba-marquee-fill: rgba(17, 17, 17, 0.06);
+  --daba-marquee-border: var(--daba-accent);
+
+  /* Layer z-index (relative to each other, not global to the consumer's page) */
+  --daba-z-canvas: 0;
+  --daba-z-overlay: 10;
+  --daba-z-chrome: 100;
+  --daba-z-menu: 1000;
+}

@@ -1,0 +1,32 @@
+databaseChangeLog:
+  # JAVA-1145: the summons -- one open round of "your agents wait on you" per account and project.
+  # `item_ids` are the pending items it covers ("request:<id>", "form:<card id>"); the items themselves
+  # are read live, so an answered one drops out without a write. A round is closed once nothing is
+  # pending. Purged with the account (JdbcOfficiumAccountData). Expand only: one new table.
+  - changeSet:
+      id: 031-summons
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_summons (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                account_id uuid not null,
+                item_ids text[] not null,
+                round int not null,
+                summoned_at timestamptz not null,
+                summoned_by text,
+                delivered boolean not null,
+                shown_at timestamptz,
+                seen_at timestamptz,
+                snoozed_until timestamptz,
+                closed_at timestamptz,
+                close_reason text
+              );
+              create unique index if not exists uq_officium_summons_open
+                on officium_summons(account_id, project_id) where closed_at is null;
+      rollback:
+        - sql:
+            sql: drop table if exists officium_summons;

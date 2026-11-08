@@ -1,0 +1,70 @@
+databaseChangeLog:
+  # JAVA-1853: the database refuses what the service refuses, so raw SQL, a cascade, an old release during a rolling
+  # deploy and any future code path meet the same wall. Every branch RAISES: a trigger that returned NULL would skip
+  # the delete silently. The one way through is the transaction-local setting `javadaba.officium_unlock = 'on'`,
+  # which a changeset sets with `select set_config('javadaba.officium_unlock', 'on', true)` and no Java file ever does.
+  # The triggers are ENABLE ALWAYS, so `session_replication_role = replica` does not switch them off.
+  # `lock_timeout` keeps a stuck session from queueing every write behind the DDL: the deploy fails instead.
+  - changeSet:
+      id: 065-project-protected-guard
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: set local lock_timeout = '5s';
+        - sql:
+            splitStatements: false
+            sql: |
+              create or replace function officium_project_guard_row() returns trigger language plpgsql as $$
+              begin
+                if coalesce(current_setting('javadaba.officium_unlock', true), '') = 'on' then
+                  if tg_op = 'DELETE' then
+                    return old;
+                  end if;
+                  return new;
+                end if;
+                if tg_op = 'DELETE' then
+                  raise exception 'project_protected: a protected project cannot be deleted' using errcode = 'P0001';
+                end if;
+                if new.id is distinct from old.id
+                   or new.owner_account_id is distinct from old.owner_account_id
+                   or new.protected is distinct from old.protected then
+                  raise exception 'project_protected: the id, owner and protection of a protected project cannot change'
+                    using errcode = 'P0001';
+                end if;
+                return new;
+              end $$;
+        - sql:
+            splitStatements: false
+            sql: |
+              create or replace function officium_project_guard_truncate() returns trigger language plpgsql as $$
+              begin
+                if coalesce(current_setting('javadaba.officium_unlock', true), '') <> 'on'
+                   and exists (select 1 from officium_project where protected) then
+                  raise exception 'project_protected: the project table holds a protected project and cannot be truncated'
+                    using errcode = 'P0001';
+                end if;
+                return null;
+              end $$;
+        - sql:
+            sql: |
+              drop trigger if exists officium_project_guard_delete on officium_project;
+              create trigger officium_project_guard_delete before delete on officium_project
+                for each row when (old.protected) execute function officium_project_guard_row();
+              drop trigger if exists officium_project_guard_update on officium_project;
+              create trigger officium_project_guard_update before update of id, owner_account_id, protected on officium_project
+                for each row when (old.protected) execute function officium_project_guard_row();
+              drop trigger if exists officium_project_guard_truncate on officium_project;
+              create trigger officium_project_guard_truncate before truncate on officium_project
+                for each statement execute function officium_project_guard_truncate();
+              alter table officium_project enable always trigger officium_project_guard_delete;
+              alter table officium_project enable always trigger officium_project_guard_update;
+              alter table officium_project enable always trigger officium_project_guard_truncate;
+      rollback:
+        - sql:
+            sql: |
+              drop trigger if exists officium_project_guard_delete on officium_project;
+              drop trigger if exists officium_project_guard_update on officium_project;
+              drop trigger if exists officium_project_guard_truncate on officium_project;
+              drop function if exists officium_project_guard_row();
+              drop function if exists officium_project_guard_truncate();

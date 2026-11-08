@@ -1,0 +1,20 @@
+databaseChangeLog:
+  # JAVA-199: what a person is called inside one organization (today: the account that owns the
+  # projects), Officium's own and unique there regardless of case. An agent writes as
+  # "Claude Code (<nickname>)" instead of the OAuth client's name.
+  - changeSet:
+      id: 009-nicknames
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_nickname (
+                organization_id uuid not null,
+                account_id uuid not null,
+                nickname text not null,
+                updated_at timestamptz not null default now(),
+                primary key (organization_id, account_id)
+              );
+              create unique index if not exists uq_officium_nickname_org_name
+                on officium_nickname (organization_id, lower(nickname));

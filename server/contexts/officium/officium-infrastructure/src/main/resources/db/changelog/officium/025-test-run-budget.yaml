@@ -1,0 +1,23 @@
+databaseChangeLog:
+  # JAVA-823: a test run carries the budget it ran with (autoloop slots, suites at once, Playwright
+  # workers per suite), so a suite's trend compares it only with runs made the same way. Nullable:
+  # a runner that does not send them still records, and runs recorded before this have none, which
+  # makes them their own basis. Expand only: the previous release neither reads nor writes them.
+  - changeSet:
+      id: 025-test-run-budget
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_test_run
+                add column if not exists slots int,
+                add column if not exists jobs int,
+                add column if not exists workers int;
+      rollback:
+        - sql:
+            sql: |
+              alter table officium_test_run
+                drop column if exists slots,
+                drop column if exists jobs,
+                drop column if exists workers;

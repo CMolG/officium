@@ -1,0 +1,22 @@
+databaseChangeLog:
+  # JAVA-783: `officium/` is now Officium's own documentation, shipped with the API and shown
+  # read-only in every project, so no project page may stay there.
+  # - Any other page under the prefix keeps its content under `project-officium/`. A page whose new
+  #   path is already taken gets the first eight hex digits of its id in the top segment instead,
+  #   so nothing is lost and nothing stays shadowed by a built-in page.
+  # Idempotent: a second run finds nothing under the prefix. OfficiumBuiltinDocsTest replays it.
+  - changeSet:
+      id: 023-builtin-doc-prefix
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              update officium_doc_page d
+                 set path = 'project-' || d.path
+               where (d.path = 'officium' or d.path like 'officium/%')
+                 and not exists (select 1 from officium_doc_page o
+                                  where o.project_id = d.project_id and o.path = 'project-' || d.path);
+              update officium_doc_page
+                 set path = 'project-officium-' || left(replace(id::text, '-', ''), 8) || substr(path, 9)
+               where path = 'officium' or path like 'officium/%';

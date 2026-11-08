@@ -1,0 +1,18 @@
+databaseChangeLog:
+  # JAVA-1686: a project's precedence rules, the cards that outrank the rest for cards.next and for new cards
+  # (ADR 0032). One row per project, the whole list replaced under its version. Expand only: a new table the
+  # previous release ignores, and a project with no row keeps today's order.
+  - changeSet:
+      id: 060-project-precedence
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_project_precedence (
+                project_id uuid primary key references officium_project (id) on delete cascade,
+                rules jsonb not null,
+                version integer not null,
+                updated_at timestamptz not null,
+                updated_by jsonb
+              );

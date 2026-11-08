@@ -1,0 +1,43 @@
+databaseChangeLog:
+  # JAVA-1047: the value report. Usage no card picked up (interactive windows, refine conversations, the
+  # waiter, subagents without a card) is kept in its own table, never as a card's time entry, so every reader
+  # of officium_card_time_entry keeps meaning "a card's". A session's report replaces the rows of its session_ref.
+  # The subscription is one monthly price per account, none by default. Expand only: a new table and a nullable
+  # column the previous release ignores.
+  - changeSet:
+      id: 056-value-report
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_session_overhead (
+                id uuid primary key,
+                project_id uuid not null references officium_project (id) on delete cascade,
+                account_id uuid,
+                session_ref text not null,
+                subagent text,
+                model text,
+                effort text,
+                started_at timestamptz,
+                ended_at timestamptz,
+                tokens_in bigint not null default 0,
+                cached_tokens_in bigint not null default 0,
+                reasoning_tokens bigint not null default 0,
+                tokens_out bigint not null default 0,
+                attended boolean
+              );
+              create index if not exists officium_session_overhead_project_idx
+                on officium_session_overhead (project_id, session_ref);
+              create table if not exists officium_account_subscription (
+                account_id uuid primary key,
+                monthly_usd numeric(10, 2) not null check (monthly_usd >= 0),
+                updated_at timestamptz not null
+              );
+              alter table officium_card_time_entry add column if not exists attended boolean;
+      rollback:
+        - sql:
+            sql: |
+              alter table officium_card_time_entry drop column if exists attended;
+              drop table if exists officium_account_subscription;
+              drop table if exists officium_session_overhead;

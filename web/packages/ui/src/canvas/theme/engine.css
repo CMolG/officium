@@ -1,0 +1,583 @@
+/*
+ * packages/ui/src/canvas/theme/engine.css
+ *
+ * The engine's minimal classes. New names (namespaced `daba-*`) that
+ * generalize the canvas/chrome patterns verified in Fluxor — this is not
+ * a copy of Fluxor's monolithic `index.css`. Consumes tokens.css's
+ * tokens.
+ */
+
+.daba-canvas {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  background: var(--daba-field);
+  color: var(--daba-text);
+}
+
+.daba-pan-layer {
+  position: absolute;
+  inset: 0;
+  /* Bugfix: without this, in a real browser the pan-layer (an `inset:0` child of the
+     `.daba-canvas`) intercepts ALL pointerdowns, and `DabaCanvas` requires
+     `event.target === event.currentTarget` to start a background pan/marquee/context
+     -menu — that gesture NEVER started outside jsdom (jsdom doesn't
+     do real hit-testing, which is why the bug never showed up in unit tests).
+     Same pattern Fluxor uses: `.desktop-pan-layer{pointer-events:none}` +
+     `.desktop-window{pointer-events:auto}` (verified in its index.css). */
+  pointer-events: none;
+}
+
+.daba-item {
+  box-sizing: border-box;
+  /* Counterpart to the fix above: items DO have to respond to pointers
+     (`pointer-events` is inherited; without this a CanvasItem would be inert). */
+  pointer-events: auto;
+}
+
+.daba-item[data-daba-highlighted='true'] {
+  outline: 2px solid var(--daba-highlight);
+  outline-offset: 2px;
+  border-radius: var(--daba-radius-md);
+}
+
+/* Selection is ink with white handles (Lib-Canvas). */
+.daba-item[data-daba-selected='true'] {
+  outline: 2px solid var(--daba-accent);
+  outline-offset: 1px;
+  border-radius: var(--daba-radius-md);
+}
+
+/* A touch pick-up: lifted a little so the finger can see it moved from the field to the hand. */
+.daba-item[data-daba-lifted='true'] {
+  box-shadow: var(--daba-chrome-shadow);
+}
+
+.daba-item__handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 1;
+  box-sizing: border-box;
+  background: var(--daba-handle);
+  border: 1.5px solid var(--daba-accent);
+  border-radius: 2px;
+}
+
+.daba-item__handle--n {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+.daba-item__handle--s {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+.daba-item__handle--e {
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+.daba-item__handle--w {
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+.daba-item__handle--ne {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+.daba-item__handle--sw {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+.daba-item__handle--nw {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+.daba-item__handle--se {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+.daba-snap-guide {
+  stroke: var(--daba-guide-color);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.daba-marquee {
+  position: absolute;
+  background: var(--daba-marquee-fill);
+  border: 1px solid var(--daba-marquee-border);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: var(--daba-z-overlay);
+}
+
+.daba-dotted-background {
+  position: absolute;
+  inset: 0;
+  z-index: var(--daba-z-canvas);
+  pointer-events: none;
+  /* The field drifts a few pixels over 20 seconds so it feels alive (Lib-Canvas). */
+  animation: daba-field-drift 20s ease-in-out infinite alternate;
+}
+
+@keyframes daba-field-drift {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-6px, 4px);
+  }
+}
+
+/* Still under reduced motion, in low mode, and while the site's Pause animations is on. */
+@media (prefers-reduced-motion: reduce) {
+  .daba-dotted-background {
+    animation: none;
+  }
+}
+
+[data-capability='low'] .daba-dotted-background,
+[data-jd-animations='paused'] .daba-dotted-background {
+  animation: none;
+}
+
+/* ── Dock ─────────────────────────────────────────────────────────────── */
+
+.daba-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: var(--daba-chrome-surface);
+  border-radius: var(--daba-radius-lg);
+  box-shadow: var(--daba-chrome-shadow);
+  z-index: var(--daba-z-chrome);
+}
+
+.daba-dock__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--daba-radius-md);
+  background: transparent;
+  color: var(--daba-text);
+  cursor: pointer;
+  /* Positioning anchor for the custom tooltip (`renderTooltip`) and the
+  popover (`DockPopover`), both rendered nested inside the item's
+  button so `position: absolute` centers them over THAT item instead
+  of over the whole `.daba-dock`. */
+  position: relative;
+}
+
+.daba-dock__item:hover {
+  background: var(--daba-hover);
+}
+
+.daba-dock__item[aria-pressed='true'] {
+  background: var(--daba-accent);
+  color: var(--daba-accent-contrast);
+}
+
+.daba-dock__ghost {
+  z-index: var(--daba-z-menu);
+  opacity: 0.85;
+}
+
+.daba-dock-popover {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px;
+  background: var(--daba-chrome-surface);
+  border-radius: var(--daba-radius-md);
+  box-shadow: var(--daba-chrome-shadow);
+}
+
+/* ── HUD ──────────────────────────────────────────────────────────────── */
+
+.daba-hud-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--daba-z-chrome);
+}
+
+.daba-hud-widget {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--daba-chrome-surface);
+  border-radius: var(--daba-radius-md);
+  box-shadow: var(--daba-chrome-shadow);
+  overflow: hidden;
+}
+
+.daba-hud-widget__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  cursor: grab;
+  color: var(--daba-text);
+  border-bottom: 1px solid var(--daba-border);
+}
+
+.daba-hud-widget__body {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+}
+
+.daba-hud-widget__resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+}
+
+.daba-hud-launcher {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 4px;
+  background: var(--daba-chrome-surface);
+  border-radius: var(--daba-radius-md);
+  box-shadow: var(--daba-chrome-shadow);
+}
+
+.daba-hud-launcher__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--daba-radius-sm);
+  background: transparent;
+  color: var(--daba-text);
+  cursor: pointer;
+}
+
+.daba-hud-launcher__item:hover {
+  background: var(--daba-hover);
+}
+
+.daba-hud-launcher__item[aria-pressed='true'] {
+  background: var(--daba-accent);
+  color: var(--daba-accent-contrast);
+}
+
+@media (pointer: coarse) {
+  .daba-hud-launcher__item {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* The minimap widget's drawing: items as blocks, the window the person looks through as a frame. */
+.daba-minimap {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.daba-minimap__item {
+  fill: var(--daba-text);
+  opacity: 0.28;
+}
+
+.daba-minimap__view {
+  fill: none;
+  stroke: var(--daba-accent);
+  stroke-width: 1.5;
+}
+
+/* ── Components panel (left bar) ──────────────────────────────────────── */
+
+.daba-components-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+  color: var(--daba-text);
+  overflow-y: auto;
+}
+
+.daba-components-panel__group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--daba-text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.daba-components-panel__chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.daba-components-panel__chevron--collapsed {
+  transform: rotate(0deg);
+}
+
+.daba-components-panel__group-header[aria-expanded='true'] .daba-components-panel__chevron {
+  transform: rotate(90deg);
+}
+
+.daba-components-panel__row {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 14px;
+  cursor: pointer;
+  border-radius: var(--daba-radius-sm);
+  font-size: 0.8125rem;
+}
+
+.daba-components-panel__row:hover,
+.daba-components-panel__row[data-daba-highlighted='true'] {
+  background: var(--daba-surface-muted);
+}
+
+.daba-components-panel__rename-input {
+  width: 100%;
+  border: 0;
+  box-shadow: 0 0 0 2px var(--daba-focus);
+  border-radius: var(--daba-radius-sm);
+  padding: 4px 6px;
+  background: var(--daba-surface);
+  color: var(--daba-text);
+}
+
+/* ── Side toolbar (right bar / inspector) ────────────────────────────── */
+
+.daba-side-toolbar {
+  display: flex;
+  flex-direction: column;
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+  color: var(--daba-text);
+  overflow-y: auto;
+}
+
+.daba-side-toolbar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 16px;
+}
+
+.daba-side-toolbar__title {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.daba-side-toolbar__body {
+  padding: 4px 16px 16px;
+}
+
+/* ── Hover, focus (the house's ring) ───────────────────────────────────── */
+
+.daba-dock__item:focus-visible,
+.daba-components-panel__group-header:focus-visible,
+.daba-components-panel__row:focus-visible,
+.daba-hud-launcher__item:focus-visible,
+.daba-touch-dock__item:focus-visible,
+.daba-touch-bar button:focus-visible {
+  outline: 2px solid var(--daba-focus);
+  outline-offset: 2px;
+}
+
+/* ── Touch (JAVA-1497): one finger moves the field ─────────────────────── */
+
+.daba-touch-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-radius: var(--daba-radius-lg);
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+  z-index: var(--daba-z-chrome);
+}
+
+.daba-touch-dock__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--daba-radius-md);
+  background: transparent;
+  color: var(--daba-text);
+  cursor: pointer;
+}
+
+.daba-touch-dock__item[aria-pressed='true'] {
+  background: var(--daba-accent);
+  color: var(--daba-accent-contrast);
+}
+
+.daba-touch-dock__item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.daba-touch-top {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+  z-index: var(--daba-z-chrome);
+}
+
+.daba-touch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Select mode names itself in an ink bar and ends itself with Done. */
+.daba-touch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 6px 0 16px;
+  border-radius: 9999px;
+  background: var(--daba-accent);
+  color: var(--daba-accent-contrast);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+.daba-touch-bar button {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--daba-accent-contrast);
+  color: var(--daba-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.daba-touch-selection {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 6px 4px 16px;
+  border-radius: var(--daba-radius-lg);
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  z-index: var(--daba-z-chrome);
+}
+
+/* Reduced motion: the field and its chrome hold still. */
+@media (prefers-reduced-motion: reduce) {
+  .daba-components-panel__chevron {
+    transition: none;
+  }
+}
+
+/* ── Panel fold (a header button; folded, one button where the panel was) ── */
+
+.daba-components-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.daba-panel-fold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--daba-radius-sm);
+  background: transparent;
+  color: var(--daba-text);
+  cursor: pointer;
+}
+
+.daba-panel-fold:hover {
+  background: var(--daba-hover);
+}
+
+.daba-panel-fold:focus-visible {
+  outline: 2px solid var(--daba-focus);
+  outline-offset: 2px;
+}
+
+.daba-panel-fold--standalone {
+  background: var(--daba-chrome-surface);
+  box-shadow: var(--daba-chrome-shadow);
+}

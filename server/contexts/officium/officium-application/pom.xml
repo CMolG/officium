@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.javadaba</groupId>
+        <artifactId>javadaba-api</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
+    </parent>
+    <artifactId>officium-application</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.javadaba</groupId>
+            <artifactId>officium-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.javadaba</groupId>
+            <artifactId>platform-image</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <!-- CardDetailView#@JsonUnwrapped only, same "just the mapper" shape fluxor-application
+             uses quarkus-jackson for (FlowSyncService). -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jackson</artifactId>
+        </dependency>
+        <!-- The MCP operation table (contract §5, JAVA-76): platform-mcp's McpOperationRegistry
+             validates a `query` call's params against the operation's own JSON Schema before
+             touching a service, the shape Officium proved (JDB-220), shared since JAVA-74. -->
+        <dependency>
+            <groupId>com.javadaba</groupId>
+            <artifactId>platform-mcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Test-only now: OfficiumMcpRegistryTest compiles each operation's own JSON Schema and
+             validates its own example against it directly, without going through the registry. -->
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

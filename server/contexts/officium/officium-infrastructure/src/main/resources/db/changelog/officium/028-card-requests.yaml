@@ -1,0 +1,35 @@
+databaseChangeLog:
+  # JAVA-1122: an agent working a card asks its person for one quick action ("open a tmux session")
+  # and waits, instead of opening a human card. One row per request. `status` is open until the person
+  # answers (done or declined), and closed once the agent resumes or withdraws it. A card holds at most
+  # one request that is not closed: the partial unique index is that rule.
+  # Expand only: one new table the previous release never reads.
+  - changeSet:
+      id: 028-card-requests
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_card_request (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                card_id uuid not null references officium_card(id) on delete cascade,
+                action text not null,
+                detail text,
+                why text,
+                status text not null,
+                created_by jsonb not null,
+                created_at timestamptz not null,
+                answered_by jsonb,
+                answered_at timestamptz,
+                note text,
+                closed_at timestamptz
+              );
+              create unique index if not exists uq_officium_card_request_live
+                on officium_card_request(card_id) where status <> 'closed';
+              create index if not exists idx_officium_card_request_project
+                on officium_card_request(project_id, created_at) where status <> 'closed';
+      rollback:
+        - sql:
+            sql: drop table if exists officium_card_request;

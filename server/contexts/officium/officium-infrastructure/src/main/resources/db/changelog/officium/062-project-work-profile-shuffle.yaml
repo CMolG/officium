@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # JAVA-1858: shuffle mode, turned on with the project's active profile. Expand only: a column with a default that
+  # the previous release never names, so its reads and its inserts work unchanged.
+  - changeSet:
+      id: 062-project-work-profile-shuffle
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: alter table officium_project_work_profile add column if not exists shuffle boolean not null default false;
+      rollback:
+        - sql:
+            sql: alter table officium_project_work_profile drop column if exists shuffle;

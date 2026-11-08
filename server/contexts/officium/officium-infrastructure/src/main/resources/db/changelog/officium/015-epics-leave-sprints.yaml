@@ -1,0 +1,29 @@
+databaseChangeLog:
+  # JAVA-290: a sprint holds an epic's children, never the epic, and the server now refuses to plan
+  # one. The epics planned before that rule (JAVA-49, JAVA-269... in production) go to the end of
+  # their project's backlog, in key order, and the sprints they leave are ranked densely again.
+  # Closed sprints are a record of what was planned, so they keep theirs. The version moves so an
+  # open board that writes to one of them gets a conflict instead of a stale overwrite.
+  - changeSet:
+      id: 015-epics-leave-sprints
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              update officium_card c
+                 set sprint_id = null, rank = m.base + m.position, version = c.version + 1, updated_at = now()
+                from (select e.id,
+                             row_number() over (partition by e.project_id order by e.number) - 1 as position,
+                             (select coalesce(max(b.rank) + 1, 0) from officium_card b
+                               where b.project_id = e.project_id and b.sprint_id is null) as base
+                        from officium_card e
+                        join officium_sprint s on s.id = e.sprint_id
+                       where e.category = 'epic' and s.state in ('planned', 'active')) m
+               where c.id = m.id;
+              update officium_card c set rank = r.position
+                from (select id, row_number() over (partition by sprint_id order by rank, number) - 1 as position
+                        from officium_card
+                       where deleted_at is null
+                         and sprint_id in (select id from officium_sprint where state in ('planned', 'active'))) r
+               where c.id = r.id and c.rank <> r.position;

@@ -1,0 +1,18 @@
+databaseChangeLog:
+  # JAVA-1780: the name an owner gives their organization. Expand only: a table the previous release never names,
+  # so it ignores it during the rolling deploy. A rollback loses only the labels; the default comes back.
+  - changeSet:
+      id: 059-organization-name
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: >
+              create table if not exists officium_organization (
+                owner_account_id uuid primary key,
+                name text not null,
+                updated_at timestamptz not null default now()
+              );
+      rollback:
+        - sql:
+            sql: drop table if exists officium_organization;

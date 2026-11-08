@@ -1,0 +1,15 @@
+# Officium's built-in documentation pages (JAVA-783): one per line, the page path under
+# officium/, read from <name>.md next to this file. Every project shows these, read-only.
+ai-and-human-cards
+card-fields
+card-lifecycle
+categories
+connect-an-agent
+documentation
+live-status
+organization
+precedence
+roles
+sprints-and-epics
+time-and-metrics
+write-a-page

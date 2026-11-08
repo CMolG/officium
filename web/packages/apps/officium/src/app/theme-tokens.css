@@ -1,0 +1,286 @@
+/* Copyright (c) 2026 Carlos Molina Galindo. */
+
+/*
+ * Officium theme tokens designed to be shareable outside this app.
+ *
+ * Extracted from `globals.css` (which now imports it, so there is one copy) so
+ * `javadaba-landing` can import this file as-is when it mounts the real `Board` in a
+ * Theater scene, without stepping on the landing's own theme.
+ *
+ * Deliberately does NOT include the `@layer base` block from `globals.css`: it paints
+ * `body` with `--jd-page`, and a scene is not a page. Nor the scrollbar rules, which are
+ * unscoped `::-webkit-scrollbar` and would repaint every scrollbar on the host site.
+ *
+ * Everything else is here because Officium's board is composed of it: the semantic status
+ * and priority palette, the agent's working snake, the entrance, and the two motion gates
+ * each of those carries.
+ */
+
+/*
+ * The backlog's status and priority palette -- from the Lovable concept
+ * (`../officium-concept/src/styles.css`, `--status-*` / `--prio-*`), restored 2026-09-15 at the
+ * user's request: "the colours were important too". The first port had dropped them for
+ * monochrome polygons, which kept the shape and threw away half of what a column says at a
+ * glance.
+ *
+ * Why a fixed palette here and not `accentFor`: these are SEMANTIC categories, not brand -- the
+ * same argument `Badge` makes for its tone table. "In progress" is amber on every project, so a
+ * person learns it once. Colour is never the only channel: the polygon's sides and the label
+ * travel with it everywhere (`interface-psychology.md` #4).
+ *
+ * Values are the concept's, in oklch, with ONE measured change: where a graphic fell under
+ * WCAG 1.4.11's 3:1, only its lightness came down, at the same hue and chroma (the rule
+ * `--jd-accent-mark` already follows). Every ink-on-fill pair passes AA as the concept wrote it.
+ *
+ *   status line vs its fill   doing .75->.62  ready .66->.60  todo .66->.625  refine .60->.59
+ *   priority icon vs white    medium .75->.67  very low .72->.655
+ *
+ * `fill` is the tint (column header, chip), `ink` the text on it, `line` the rule and the stroke.
+ *
+ * On `:root` AND on the scope: inside this app they are the page's, and on the landing the
+ * scene is not the page, so they have to arrive with the scope or the board comes out grey.
+ */
+:root,
+.officium-scope {
+  /* Completed has no column (2026-09-23): it tints its chip in the card, the search and "View
+     completed". Green for closed, at a hue far enough from Ready's teal to tell them apart. */
+  /* The system map's six kinds of node (Doc-Systema, "Six kinds of node"): a tint for the kind's chip. The ink on it is
+     fixed (#111111): the tint does not follow the theme, so neither does its ink. */
+  --officium-kind-app: #e2eaf4;
+  --officium-kind-service: #ede5ff;
+  --officium-kind-database: #e3efe6;
+  --officium-kind-queue: #fff4d6;
+  --officium-kind-server: #efede7;
+  --officium-kind-external: #ddf6fa;
+  --officium-kind-ink: #111111;
+
+  --officium-status-done: oklch(0.93 0.05 135);
+  --officium-status-done-ink: oklch(0.37 0.1 140);
+  --officium-status-done-line: oklch(0.58 0.14 140);
+  /* Rejected has no column either (JAVA-1415): a discarded card, read from "View rejected". A
+     muted clay, far from Completed's green and from To do's pink, with the same lightness steps as
+     the other states so its ink and line keep their measured contrast. */
+  --officium-status-rejected: oklch(0.92 0.03 45);
+  --officium-status-rejected-ink: oklch(0.38 0.07 40);
+  --officium-status-rejected-line: oklch(0.58 0.09 40);
+  --officium-status-deploy: oklch(0.92 0.05 250);
+  --officium-status-deploy-ink: oklch(0.35 0.13 255);
+  --officium-status-deploy-line: oklch(0.6 0.17 255);
+  --officium-status-review: oklch(0.92 0.05 300);
+  --officium-status-review-ink: oklch(0.36 0.14 300);
+  --officium-status-review-line: oklch(0.6 0.18 300);
+  --officium-status-doing: oklch(0.93 0.06 85);
+  --officium-status-doing-ink: oklch(0.42 0.11 70);
+  --officium-status-doing-line: oklch(0.62 0.15 75);
+  --officium-status-ready: oklch(0.93 0.06 160);
+  --officium-status-ready-ink: oklch(0.38 0.1 160);
+  --officium-status-ready-line: oklch(0.6 0.15 160);
+  --officium-status-todo: oklch(0.92 0.05 350);
+  --officium-status-todo-ink: oklch(0.4 0.13 355);
+  --officium-status-todo-line: oklch(0.625 0.17 355);
+  --officium-status-refine: oklch(0.9 0.004 260);
+  --officium-status-refine-ink: oklch(0.3 0.01 260);
+  --officium-status-refine-line: oklch(0.59 0.01 260);
+
+  --officium-priority-superHigh: oklch(0.58 0.22 27);
+  --officium-priority-high: oklch(0.66 0.17 45);
+  --officium-priority-medium: oklch(0.67 0.14 90);
+  --officium-priority-low: oklch(0.62 0.14 250);
+  --officium-priority-superLow: oklch(0.655 0.1 210);
+  /* A card's category (JAVA-46, user request 2026-09-24): the colour of its top border and
+     nothing else -- the icon and the card keep theirs. Fifteen hues cannot all be far apart, so
+     lightness separates the close ones (the two greens, the reds), and colour is never alone: the
+     marker's icon and name say it too (`interface-psychology.md` #4). Each is a graphic on the
+     card's white and dark faces, so each holds WCAG 1.4.11's 3:1 against both, measured
+     2026-09-24: 3.31:1 (hotfix) to 6.32:1 against white, 3.32:1 (security) to 6.34:1 against black. */
+  --officium-category-epic: oklch(0.58 0.2 300);
+  --officium-category-feature: oklch(0.6 0.17 255);
+  --officium-category-userStory: oklch(0.62 0.12 215);
+  --officium-category-enhancement: oklch(0.62 0.12 180);
+  --officium-category-bug: oklch(0.58 0.21 27);
+  --officium-category-hotfix: oklch(0.66 0.18 50);
+  --officium-category-regression: oklch(0.6 0.2 350);
+  --officium-category-refactor: oklch(0.63 0.16 135);
+  --officium-category-technicalDebt: oklch(0.64 0.13 100);
+  --officium-category-infrastructure: oklch(0.55 0.05 240);
+  --officium-category-security: oklch(0.5 0.17 275);
+  --officium-category-spike: oklch(0.6 0.15 322);
+  --officium-category-testing: oklch(0.5 0.12 155);
+  --officium-category-routine: oklch(0.6 0 0);
+  --officium-category-documentation: oklch(0.5 0.08 60);
+  /* The tint a category's marker wears, one per group of the four (Off-Vocab: "an icon on its group's tint"). The
+     icon is ink on its fill at AA; the name beside it is always written, so the tint never carries the kind alone. */
+  --officium-cat-product: oklch(0.93 0.05 255);
+  --officium-cat-product-ink: oklch(0.38 0.13 255);
+  --officium-cat-corrective: oklch(0.93 0.05 27);
+  --officium-cat-corrective-ink: oklch(0.4 0.15 27);
+  --officium-cat-technical: oklch(0.93 0.04 295);
+  --officium-cat-technical-ink: oklch(0.38 0.12 295);
+  --officium-cat-research: oklch(0.93 0.05 155);
+  --officium-cat-research-ink: oklch(0.36 0.09 155);
+  /* A project's own icon color (JAVA-51, officium-api.md §8.1): a closed 10-color palette, never
+     a free hex, so it never has to be checked for contrast a second time. Same method as the
+     category tokens above -- one oklch value per hue, mid lightness (0.55-0.64) so it clears WCAG
+     1.4.11's 3:1 for a GRAPHIC (the icon) against both the light surface (`--jd-page` near white)
+     and the dark one (near black). Verified with a standalone oklch->sRGB->relative-luminance
+     script (not a browser measurement) on 2026-09-24: worst case 3.61:1 (orange) against white,
+     4.11:1 (indigo) against black, every other pair clears 3.7:1. The icon carries the color; the
+     project's NAME is what actually tells two projects apart (contract note), so this palette
+     never needs to pass AA for TEXT. */
+  --officium-project-slate: oklch(0.56 0.01 260);
+  --officium-project-red: oklch(0.58 0.21 27);
+  --officium-project-orange: oklch(0.64 0.18 45);
+  --officium-project-amber: oklch(0.62 0.15 80);
+  --officium-project-green: oklch(0.6 0.15 145);
+  --officium-project-teal: oklch(0.58 0.12 185);
+  --officium-project-blue: oklch(0.58 0.18 255);
+  --officium-project-indigo: oklch(0.55 0.18 275);
+  --officium-project-violet: oklch(0.58 0.2 300);
+  --officium-project-pink: oklch(0.6 0.19 350);
+  /* An agent working a card RIGHT NOW: the snake, its marker on the card, the live list and the
+     modal's live status. One colour, named once -- it was a hex copied into four files. */
+  --officium-agent: #f1533b;
+  /* The project's machine is connected (the dot beside the attachments). Never alone: the line
+     next to it says the same in words. */
+  --officium-online: #1f9d55;
+  /* The ink on a card's epic badge (JAVA-291). The badge paints its own light pastel in BOTH
+     themes (`epic-badge.ts`), so its ink is fixed dark rather than `--jd-ink`, which turns white in
+     dark mode. `e2e/epic-badge.spec.ts` checks AA against every hue a badge can get. */
+  --officium-epic-ink: #111111;
+  /* The documentation sidebar's ground (JAVA-1535): a step off the page's white, so the tree reads as
+     navigation beside the text. Officium is a light `product` surface only; a dark one gets its own. */
+  --officium-docs-sidebar: #fafafa;
+}
+
+/*
+ * JDB-238 motion policy (`interface-psychology.md` point 5: "nothing moves on its own
+ * without being stoppable... respects prefers-reduced-motion"). `.jd-motion` (`TaskCard`'s
+ * hover-lift) is turned off two ways: `[data-capability="low"]`, stamped by `AppShellClient`
+ * from `useVisualPerformance` -- which already folds the OS preference in, so this alone covers
+ * it once JS has mounted -- and a plain `@media` block for the instant before that (first paint,
+ * or a context this hook never reaches, e.g. a server-rendered fragment). The landing stamps the
+ * same attribute on its Theater wrapper, so the gate works there unchanged. The drag resettle
+ * (`SortableTaskCard`'s dnd-kit `transition`) is gated in JS for the same reason a CSS override
+ * can't reach it: it is set as an INLINE style, which no stylesheet rule can beat without
+ * `!important` (see `AccentSurface`'s own scar with exactly this class of bug).
+ *
+ * The press (`:active`, JAVA-59) goes through the same gates. `translate` and `scale` are reset
+ * as well as `transform`: Tailwind v4 writes `-translate-y-*` and `scale-*` as those two
+ * properties, which `transform: none` alone never reached.
+ */
+[data-capability="low"] .jd-motion,
+[data-capability="low"] .jd-motion:hover,
+[data-capability="low"] .jd-motion:active {
+  transition: none;
+  transform: none;
+  translate: none;
+  scale: none;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jd-motion,
+  .jd-motion:hover,
+  .jd-motion:active {
+    transition: none;
+    transform: none;
+    translate: none;
+    scale: none;
+    box-shadow: none;
+  }
+}
+
+/*
+ * `WorkingSnake` (officium-api.md §4.1): the border of a card an agent is actively working on.
+ * Each segment is a dash of N out of the rect's `pathLength` of 100. Starting its offset at N
+ * (and ending at N - 100) aligns every segment's LEADING end, so tail (34), body (20) and head
+ * (8) travel as one snake. One keyframe per length, with literal numbers, on purpose: a
+ * `calc(var(--len) - 100)` inside `@keyframes` is dropped by Chromium for this unitless
+ * property, and the animation then reports "running" while nothing moves.
+ */
+.officium-snake rect {
+  fill: none;
+  stroke: var(--officium-agent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.officium-snake-track {
+  opacity: 0.18;
+}
+.officium-snake-segment {
+  animation-duration: 2.4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.officium-snake-segment:nth-of-type(2) { stroke-dasharray: 34 66; opacity: 0.3; animation-name: officium-snake-34; }
+.officium-snake-segment:nth-of-type(3) { stroke-dasharray: 20 80; opacity: 0.6; animation-name: officium-snake-20; }
+.officium-snake-segment:nth-of-type(4) { stroke-dasharray: 8 92; opacity: 1; animation-name: officium-snake-8; }
+
+@keyframes officium-snake-34 { from { stroke-dashoffset: 34; } to { stroke-dashoffset: -66; } }
+@keyframes officium-snake-20 { from { stroke-dashoffset: 20; } to { stroke-dashoffset: -80; } }
+@keyframes officium-snake-8 { from { stroke-dashoffset: 8; } to { stroke-dashoffset: -92; } }
+
+/*
+ * Entrances (2026-09-15, "effects are a big gap in Javadaba"): what appears on the board because
+ * something happened -- the agents' strip, the "Needs you" lane, a view switched to -- rises into
+ * place instead of popping. Cards moving between columns are animated in JS (`use-card-flip.ts`),
+ * because only JS knows where a card WAS.
+ */
+@keyframes officium-rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.officium-rise {
+  animation: officium-rise var(--jd-dur-slow) var(--ease-jd) backwards;
+}
+[data-capability="low"] .officium-rise { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .officium-rise { animation: none; }
+}
+
+/*
+ * The documentation sidebar folding and unfolding (JAVA-1535, reworked after its review): the fold is applied inside a
+ * view transition (`use-fold-motion.ts`), and these two names make the frame and the page beside it travel together.
+ * The browser animates each group's box (the frame closing like a drawer, the page sliding into the room it leaves);
+ * the snapshots are never stretched (`object-fit: none`, pinned to the left) and the frame clips what no longer fits.
+ * Nothing in the layout transitions its width (native-portability rule 9): only the snapshots move. Reduced motion
+ * and browsers without view transitions get the change with no motion (`withViewTransition`).
+ */
+.officium-docs-sidebar { view-transition-name: officium-docs-sidebar; }
+.officium-docs-main { view-transition-name: officium-docs-main; }
+::view-transition-group(officium-docs-sidebar),
+::view-transition-group(officium-docs-main) {
+  animation-duration: var(--jd-dur-base);
+  animation-timing-function: var(--ease-jd);
+  overflow: clip;
+}
+::view-transition-old(officium-docs-sidebar),
+::view-transition-new(officium-docs-sidebar),
+::view-transition-old(officium-docs-main),
+::view-transition-new(officium-docs-main) {
+  width: auto;
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+  animation-duration: var(--jd-dur-base);
+  animation-timing-function: var(--ease-jd);
+}
+/* The page does not cross-fade: two copies of it fading into each other doubled every control aligned to its right
+   edge. Its final layout slides in as one piece, uncovered as its box widens. */
+::view-transition-old(officium-docs-main) {
+  animation: none;
+  opacity: 0;
+}
+::view-transition-new(officium-docs-main) {
+  animation: none;
+}
+/* Same two gates as `.jd-motion` above: it stops moving, it does not stop showing. */
+[data-capability="low"] .officium-snake-segment { display: none; }
+[data-capability="low"] .officium-snake-track { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .officium-snake-segment { display: none; }
+  .officium-snake-track { opacity: 1; }
+}
+
+/* A looping Theater scene draws the snake as its static track: the moving segments grew the
+ * renderer's committed Blink memory on every visit (JAVA-1659). The real app's snake still moves. */
+.theater__layer .officium-snake-segment { display: none; }
+.theater__layer .officium-snake-track { opacity: 1; }

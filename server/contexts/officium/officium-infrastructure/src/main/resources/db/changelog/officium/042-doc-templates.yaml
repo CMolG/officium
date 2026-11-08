@@ -1,0 +1,16 @@
+databaseChangeLog:
+  # JAVA-801: a template is a page flagged `template` (design §6): out of the tree, the lists and
+  # search, listed in the Templates section, and copied into a new page with its variables filled.
+  # Where it lives is its path (depth 1: the project's; deeper: its first segment's collection), so it
+  # needs no scope column. Expand only: the default keeps every existing row a page, and so is every
+  # row the previous release writes during a rolling deploy.
+  - changeSet:
+      id: 042-doc-templates
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_page add column if not exists template boolean not null default false;
+              create index if not exists ix_officium_doc_page_templates
+                on officium_doc_page (project_id, path) where template and deleted_at is null;

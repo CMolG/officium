@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 027-project-form-languages
+      author: javadaba
+      context: default
+      comment: >
+        JAVA-1082: the languages every human card's form in a project is written in, the default
+        first. Empty means no requirement, which is what every existing project gets.
+      changes:
+        - sql:
+            sql: |
+              alter table officium_project add column if not exists form_languages text[] not null default '{}';

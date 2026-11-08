@@ -1,0 +1,30 @@
+# Card search backends test bed (plan
+# .harness/plans/2026-09-19-officium-busqueda-backends-benchmark.md). This migration is the one
+# that ALWAYS runs, whatever `officium.search.provider` is: the trigram index costs nothing when
+# it is not used, and `cards.search` (JdbcCardRepository.search, ilike over title/description)
+# gains index support without changing a single line of its SQL.
+#
+# An exact copy of Sonus's pattern (`005-station-busqueda.yaml`, 62,188 rows, already solved this
+# way): `pg_trgm` may need superuser to be created, and that must NOT bring down startup -- hence
+# the `failOnError: false` on both changesets. Without the extension, `ilike '%text%'` is still
+# correct, it just does a sequential scan (280 cards today: milliseconds).
+databaseChangeLog:
+  - changeSet:
+      id: 003-card-busqueda-trgm
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create extension if not exists pg_trgm;
+            failOnError: false
+        - sql:
+            sql: |
+              create index if not exists idx_officium_card_title_trgm
+                on officium_card using gin (title gin_trgm_ops);
+            failOnError: false
+        - sql:
+            sql: |
+              create index if not exists idx_officium_card_description_trgm
+                on officium_card using gin (description gin_trgm_ops);
+            failOnError: false

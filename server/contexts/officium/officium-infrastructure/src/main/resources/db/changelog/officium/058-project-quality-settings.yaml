@@ -1,0 +1,19 @@
+databaseChangeLog:
+  # JAVA-1803: the per-project quality settings, one row per project. `settings` is one jsonb with a key per feature
+  # (the prior-failure read: window, budget, threshold). Expand only: a new table nothing in the previous release reads.
+  - changeSet:
+      id: 058-project-quality-settings
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_project_quality_settings (
+                project_id uuid primary key references officium_project (id) on delete cascade,
+                settings jsonb not null default '{}'::jsonb,
+                updated_at timestamptz not null default now(),
+                updated_by jsonb
+              );
+      rollback:
+        - sql:
+            sql: drop table if exists officium_project_quality_settings;

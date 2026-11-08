@@ -1,0 +1,31 @@
+databaseChangeLog:
+  # JAVA-791: the documentation tree's layout. Rows are SPARSE: at most one per path, and only for a
+  # collection (a depth-1 node) or a node somebody styled or reordered. Everything else is derived from
+  # the page paths, so no page write (upsert, import, delete) has to keep this table in step.
+  # `position` is NULL until a node is placed; `sort_mode` is how THIS node orders its children.
+  # The seed makes every first path segment a collection, A-Z, so the tree looks the same on day one.
+  - changeSet:
+      id: 033-doc-tree-nodes
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_node (
+                project_id uuid not null references officium_project(id) on delete cascade,
+                path text not null,
+                icon text,
+                icon_color text,
+                sort_mode text not null default 'manual' check (sort_mode in ('manual', 'alphabetical')),
+                position int,
+                version int not null default 1,
+                updated_at timestamptz not null default now(),
+                primary key (project_id, path)
+              );
+              insert into officium_doc_node (project_id, path, icon, icon_color, sort_mode, position)
+              select project_id, segment, 'folder', 'slate', 'manual',
+                     (row_number() over (partition by project_id order by lower(segment), segment) - 1)::int
+                from (select distinct project_id, split_part(path, '/', 1) as segment
+                        from officium_doc_page
+                       where path <> 'officium' and path not like 'officium/%') s
+              on conflict do nothing;

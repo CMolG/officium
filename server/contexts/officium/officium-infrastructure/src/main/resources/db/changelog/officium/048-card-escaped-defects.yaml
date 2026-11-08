@@ -1,0 +1,27 @@
+databaseChangeLog:
+  # JAVA-1525: a defect that escaped a card's delivery and came back as a corrective card (bug, regression, hotfix,
+  # or a refactor, technicalDebt or enhancement naming it) is kept on that ORIGIN card, append-only: the corrective
+  # card, the origin's phase that let it through, the quality dimension, the rules it broke, who and when. One entry
+  # per (origin, corrective) pair. Expand only: a new table the previous release ignores.
+  - changeSet:
+      id: 048-card-escaped-defects
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_card_escaped_defect (
+                id uuid primary key,
+                project_id uuid not null,
+                origin_card_id uuid not null references officium_card (id) on delete cascade,
+                corrective_card_id uuid not null references officium_card (id) on delete cascade,
+                corrective_key text not null,
+                recorded_at timestamptz not null,
+                actor jsonb not null,
+                escaped_in text not null,
+                quality_dimension text not null,
+                rules text[] not null default '{}',
+                unique (origin_card_id, corrective_card_id)
+              );
+              create index if not exists officium_card_escaped_defect_project_idx
+                on officium_card_escaped_defect (project_id, recorded_at);

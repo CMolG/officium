@@ -1,0 +1,70 @@
+{
+  "name": "@javadaba/brand",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Javadaba brand icon/logo system: the color-trapping rombo as a parametric SVG component (JavadabaLogo) + brand registry. Figma values are converted to a relative 850-unit viewBox. Consumed by the landing and the Host (javadaba-web-os) via workspace:*.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./favicon": {
+      "types": "./src/favicon.tsx",
+      "default": "./src/favicon.tsx"
+    },
+    "./doodles": {
+      "types": "./src/doodles/index.ts",
+      "default": "./src/doodles/index.ts"
+    },
+    "./doodles/og": {
+      "types": "./src/doodles/og.ts",
+      "default": "./src/doodles/og.ts"
+    },
+    "./share": {
+      "types": "./src/share/index.ts",
+      "default": "./src/share/index.ts"
+    },
+    "./share/unfurl": {
+      "types": "./src/share/unfurl/index.ts",
+      "default": "./src/share/unfurl/index.ts"
+    },
+    "./share/trace": "./src/share/trace.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "tsc --noEmit && eslint",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": ">=19",
+    "react-dom": ">=19"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sharp": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "lucide": "^1.47.0"
+  }
+}

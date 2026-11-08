@@ -1,0 +1,29 @@
+databaseChangeLog:
+  # JAVA-1527: who ran each phase of a card, kept on every status change, append-only: the project's active work
+  # profile then (null under Officium's defaults), the role the mover named, and that role's model and effort. And
+  # the profile a session's time entry ran under. Expand only: a new table and a nullable column the previous
+  # release ignores.
+  - changeSet:
+      id: 051-phase-runs
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_card_phase_run (
+                id uuid primary key,
+                project_id uuid not null,
+                card_id uuid not null references officium_card (id) on delete cascade,
+                ran_at timestamptz not null,
+                actor_kind text not null check (actor_kind in ('person', 'agent')),
+                from_status text not null,
+                to_status text not null,
+                category text,
+                profile_id text,
+                role text,
+                model text,
+                effort text
+              );
+              create index if not exists officium_card_phase_run_project_idx
+                on officium_card_phase_run (project_id, ran_at);
+              alter table officium_card_time_entry add column if not exists profile_id text;

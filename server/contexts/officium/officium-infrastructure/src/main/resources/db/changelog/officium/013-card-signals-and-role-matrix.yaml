@@ -1,0 +1,19 @@
+databaseChangeLog:
+  # JAVA-294: which roles may work a card. `signals` is what about a card's work brings roles its
+  # category alone does not; plain text like `tags`, its vocabulary lives in the domain's `Signal`.
+  # A project's override of the default role matrix is one row per project, versioned like a card:
+  # only the cells it names, since the defaults live in code (`RoleMatrix.defaults()`).
+  - changeSet:
+      id: 013-card-signals-and-role-matrix
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card add column if not exists signals text[] not null default '{}';
+              create table if not exists officium_project_role_matrix (
+                project_id uuid primary key references officium_project(id) on delete cascade,
+                overrides jsonb not null,
+                version integer not null,
+                updated_at timestamptz not null
+              );

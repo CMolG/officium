@@ -1,0 +1,115 @@
+databaseChangeLog:
+  # The project workspace (user request, 2026-09-24, JAVA-49; contract §8). Four independent
+  # additions, one changeset each so a failure names the one that broke.
+
+  # JAVA-51: how the owner tells projects apart in the sidebar. Plain text, like `status`: the
+  # vocabularies (the icon pattern, the closed color palette) live in the domain.
+  - changeSet:
+      id: 007-project-appearance
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_project add column if not exists icon text not null default 'folder-kanban';
+              alter table officium_project add column if not exists icon_color text not null default 'slate';
+
+  # JAVA-53: sprints. A card with no sprint is in the backlog. `rank` is its dense position inside
+  # its sprint or the backlog, the way `card_order` is inside a column; the backfill ranks today's
+  # cards by column and then by their order in it, so the backlog reads like the board did.
+  - changeSet:
+      id: 007-sprints
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_sprint (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                number int not null,
+                name text not null,
+                goal text not null default '',
+                state text not null,
+                start_date date,
+                end_date date,
+                started_at timestamptz,
+                closed_at timestamptz,
+                sprint_order int not null default 0,
+                version int not null default 1,
+                created_at timestamptz not null,
+                updated_at timestamptz not null
+              );
+              create index if not exists idx_officium_sprint_project on officium_sprint (project_id, state);
+              -- At most one active sprint per project, held by the database too.
+              create unique index if not exists uq_officium_sprint_active on officium_sprint (project_id)
+                where state = 'active';
+              alter table officium_card add column if not exists sprint_id uuid
+                references officium_sprint(id) on delete set null;
+              alter table officium_card add column if not exists rank int not null default 0;
+              create index if not exists idx_officium_card_sprint on officium_card (project_id, sprint_id, rank);
+              update officium_card c set rank = r.position
+                from (select id, row_number() over (partition by project_id order by
+                        case status when 'refine' then 0 when 'todo' then 1 when 'doing' then 2
+                          when 'ready' then 3 when 'review' then 4 when 'deploy' then 5 else 6 end,
+                        card_order, number) - 1 as position
+                      from officium_card where deleted_at is null) r
+               where c.id = r.id;
+
+  # JAVA-50: an agent's run, persisted so its time can be imputed when it ends. At most one open run
+  # per card. `source` tells an imputed entry from one a person typed.
+  - changeSet:
+      id: 007-agent-runs
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_agent_run (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                card_id uuid not null references officium_card(id) on delete cascade,
+                actor jsonb not null,
+                started_at timestamptz not null,
+                last_seen_at timestamptz not null,
+                ended_at timestamptz
+              );
+              create unique index if not exists uq_officium_agent_run_open on officium_agent_run (card_id)
+                where ended_at is null;
+              create index if not exists idx_officium_agent_run_open_seen on officium_agent_run (last_seen_at)
+                where ended_at is null;
+              alter table officium_card_time_entry add column if not exists source text not null default 'manual';
+
+  # JAVA-57: teams, owned by an account, granting a role on that account's projects.
+  - changeSet:
+      id: 007-teams
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_team (
+                id uuid primary key,
+                owner_account_id uuid not null,
+                name text not null,
+                description text not null default '',
+                version int not null default 1,
+                created_at timestamptz not null,
+                updated_at timestamptz not null
+              );
+              create index if not exists idx_officium_team_owner on officium_team (owner_account_id);
+              create table if not exists officium_team_member (
+                team_id uuid not null references officium_team(id) on delete cascade,
+                account_id uuid not null,
+                added_at timestamptz not null,
+                primary key (team_id, account_id)
+              );
+              create index if not exists idx_officium_team_member_account on officium_team_member (account_id);
+              create table if not exists officium_team_project (
+                team_id uuid not null references officium_team(id) on delete cascade,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                role text not null,
+                created_at timestamptz not null,
+                primary key (team_id, project_id)
+              );
+              create index if not exists idx_officium_team_project_project on officium_team_project (project_id);

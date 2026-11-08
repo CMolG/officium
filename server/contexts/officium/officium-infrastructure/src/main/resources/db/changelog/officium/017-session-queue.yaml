@@ -1,0 +1,25 @@
+databaseChangeLog:
+  # JAVA-561: cards queued from the board into one of the account's open agent sessions. Backlog
+  # state, so it survives a restart; the sessions themselves are live presence, in memory. A card is
+  # in at most one queue (the key). delivered_at marks a card a waiter holds but has not confirmed:
+  # past a short lease it is handed out again. Purged with the account (JdbcOfficiumAccountData) and
+  # with the card or its project.
+  - changeSet:
+      id: 017-session-queue
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_session_queue (
+                card_id uuid primary key references officium_card(id) on delete cascade,
+                card_key text not null,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                account_id uuid not null,
+                session_id text not null,
+                position bigint not null,
+                queued_at timestamptz not null,
+                delivered_at timestamptz
+              );
+              create index if not exists idx_officium_session_queue_session
+                on officium_session_queue(account_id, session_id, position);

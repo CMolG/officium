@@ -1,0 +1,28 @@
+databaseChangeLog:
+  # JAVA-1416: every send-back of a card from review or deploy to a work phase is kept, append-only: when, who, the
+  # role they reviewed as, from and to which state, the reasons from the closed list, and the comment that carried
+  # the findings. Expand only: a new table the previous release ignores. The entry goes with its card, and only
+  # loses its comment link when that comment is deleted.
+  - changeSet:
+      id: 046-card-review-returns
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_card_review_return (
+                id uuid primary key,
+                project_id uuid not null,
+                card_id uuid not null references officium_card (id) on delete cascade,
+                returned_at timestamptz not null,
+                actor jsonb not null,
+                role text,
+                from_status text not null,
+                to_status text not null,
+                reasons text[] not null check (cardinality(reasons) > 0),
+                comment_id uuid references officium_card_comment (id) on delete set null
+              );
+              create index if not exists officium_card_review_return_card_idx
+                on officium_card_review_return (card_id, returned_at);
+              create index if not exists officium_card_review_return_project_idx
+                on officium_card_review_return (project_id, returned_at);

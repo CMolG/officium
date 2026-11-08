@@ -1,0 +1,25 @@
+databaseChangeLog:
+  # JAVA-245: imputed time says what it was spent on (concept), the span it covers, and -- when an
+  # agent's harness reported the whole session -- the model, its tokens and the subagent that spent
+  # them. session_ref makes a session's report idempotent: a new report of the same session replaces
+  # the entries of the last one.
+  - changeSet:
+      id: 012-time-entry-session-usage
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card_time_entry
+                add column if not exists concept text not null default 'work',
+                add column if not exists model text,
+                add column if not exists tokens_in bigint,
+                add column if not exists cached_tokens_in bigint,
+                add column if not exists reasoning_tokens bigint,
+                add column if not exists tokens_out bigint,
+                add column if not exists started_at timestamptz,
+                add column if not exists ended_at timestamptz,
+                add column if not exists session_ref text,
+                add column if not exists subagent text;
+              create index if not exists idx_officium_time_entry_session
+                on officium_card_time_entry(session_ref) where session_ref is not null;

@@ -1,0 +1,46 @@
+databaseChangeLog:
+  # JAVA-375: GitHub activity linked to cards. A repository the Officium GitHub App was installed on
+  # is choosable; its project owner connects it to one project (project_id), and only then do its
+  # events touch cards. A delivery id is kept for a week, which covers GitHub's own redelivery window,
+  # so a redelivered event is answered without being applied twice. A card's links go with the card.
+  - changeSet:
+      id: 014-github-integration
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_github_repository (
+                repo text primary key,
+                installation_id bigint not null,
+                project_id uuid references officium_project(id) on delete set null,
+                installed_at timestamptz not null,
+                connected_at timestamptz
+              );
+              create index if not exists ix_officium_github_repository_project
+                on officium_github_repository (project_id);
+              create table if not exists officium_github_delivery (
+                delivery_id text primary key,
+                event text not null,
+                received_at timestamptz not null
+              );
+              create index if not exists ix_officium_github_delivery_received
+                on officium_github_delivery (received_at);
+              create table if not exists officium_card_dev_link (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                card_id uuid not null references officium_card(id) on delete cascade,
+                kind text not null check (kind in ('commit', 'branch', 'pullRequest')),
+                repo text not null,
+                ref text not null,
+                url text not null,
+                title text not null,
+                author text,
+                state text not null check (state in ('open', 'merged', 'closed')),
+                created_at timestamptz not null,
+                updated_at timestamptz not null
+              );
+              create unique index if not exists uq_officium_card_dev_link
+                on officium_card_dev_link (card_id, kind, repo, ref);
+              create index if not exists ix_officium_card_dev_link_branch
+                on officium_card_dev_link (project_id, repo, ref) where kind = 'branch';

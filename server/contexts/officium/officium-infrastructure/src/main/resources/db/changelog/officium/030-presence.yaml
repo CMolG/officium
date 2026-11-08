@@ -1,0 +1,22 @@
+databaseChangeLog:
+  # JAVA-1144: whether Officium is open, visible and focused, per account and device. Current state
+  # only, no history: a beat overwrites the row, and rows unseen for 30 days are pruned on write.
+  # Purged with the account (JdbcOfficiumAccountData).
+  - changeSet:
+      id: 030-presence
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_presence (
+                account_id uuid not null,
+                device_id uuid not null,
+                label varchar(60),
+                visible boolean not null,
+                focused boolean not null,
+                first_seen_at timestamptz not null,
+                last_seen_at timestamptz not null,
+                closed_at timestamptz,
+                primary key (account_id, device_id)
+              );

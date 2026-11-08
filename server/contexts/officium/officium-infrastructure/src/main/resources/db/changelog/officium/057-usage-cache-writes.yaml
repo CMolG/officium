@@ -1,0 +1,22 @@
+databaseChangeLog:
+  # JAVA-1777: cache writes are recorded per TTL bucket (5 minutes, 1 hour), parts of tokens_in, so each is
+  # priced at its own rate. A row reported before has 0 and prices its writes as input. Expand only: constant
+  # defaults add no table rewrite, and the previous release ignores both columns.
+  - changeSet:
+      id: 057-usage-cache-writes
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card_time_entry add column if not exists cache_write_5m_tokens bigint not null default 0;
+              alter table officium_card_time_entry add column if not exists cache_write_1h_tokens bigint not null default 0;
+              alter table officium_session_overhead add column if not exists cache_write_5m_tokens bigint not null default 0;
+              alter table officium_session_overhead add column if not exists cache_write_1h_tokens bigint not null default 0;
+      rollback:
+        - sql:
+            sql: |
+              alter table officium_card_time_entry drop column if exists cache_write_5m_tokens;
+              alter table officium_card_time_entry drop column if exists cache_write_1h_tokens;
+              alter table officium_session_overhead drop column if exists cache_write_5m_tokens;
+              alter table officium_session_overhead drop column if exists cache_write_1h_tokens;

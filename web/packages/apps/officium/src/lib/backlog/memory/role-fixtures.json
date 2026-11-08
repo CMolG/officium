@@ -1,0 +1,312 @@
+[
+  {
+    "roleId": "acceptance-qa",
+    "version": 1,
+    "title": "Is Every Acceptance Criterion Met, With Evidence?",
+    "description": "Verify that every acceptance criterion is met, including edge cases and exploratory checks around the change. For epics, verify the objective as a whole.",
+    "tags": [
+      "board"
+    ],
+    "body": "# acceptance-qa: Is Every Acceptance Criterion Met, With Evidence?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify that every acceptance criterion is met, including edge cases and exploratory checks around the change. For epics, verify the objective as a whole.\n- **Must achieve:** A pass/fail result for every acceptance criterion, with evidence · Exploratory findings · Regressions detected around the change.\n- **Must not:** Accept a criterion without evidence. Test only the happy path.\n"
+  },
+  {
+    "roleId": "architecture-reviewer",
+    "version": 1,
+    "title": "Does the Change Fit the Architecture It Lands In?",
+    "description": "Verify that the delivered change conforms to recorded decisions and module boundaries, and that it moves the architecture toward its target rather than away from it.",
+    "tags": [
+      "board"
+    ],
+    "body": "# architecture-reviewer: Does the Change Fit the Architecture It Lands In?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify that the delivered change conforms to recorded decisions and module boundaries, and that it moves the architecture toward its target rather than away from it.\n- **Must achieve:** Conformance with ADRs and boundaries, automated with fitness functions where possible · Drift detected and recorded.\n- **Must not:** Accept an undocumented architectural decision embedded in code.\n"
+  },
+  {
+    "roleId": "backend-developer",
+    "version": 1,
+    "title": "Server-Side Implementation, Contracts & Telemetry",
+    "description": "Implement server-side changes (services, APIs, domain logic) within the category contract, with tests and instrumentation.",
+    "tags": [
+      "board"
+    ],
+    "body": "# backend-developer: Server-Side Implementation, Contracts & Telemetry\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Implement server-side changes (services, APIs, domain logic) within the category contract, with tests and instrumentation.\n- **Must achieve:** Working code that meets the exit contract, with tests at the planned levels · Public contracts documented as OpenAPI or AsyncAPI · Errors expressed as Problem Details · Telemetry for new paths.\n- **Must not:** Break the category's behaviour rules (a refactor that changes observable behaviour, for one). Expand scope.\n"
+  },
+  {
+    "roleId": "code-reviewer",
+    "version": 1,
+    "title": "Does the Change Leave the Code Correct, Clear and Healthier?",
+    "description": "Verify correctness, readability, maintainability and consistency with conventions. Apply the domain checklist and the category's behaviour rules.",
+    "tags": [
+      "board"
+    ],
+    "body": "# code-reviewer: Does the Change Leave the Code Correct, Clear and Healthier?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify correctness, readability, maintainability and consistency with conventions. Apply the domain checklist and the category's behaviour rules.\n- **Must achieve:** Comments classified by severity · The category's rules confirmed · The engineering audit recorded where the board takes it (on Officium, an approval's `qualityScorecard` or a send-back's `reviewReturn.ruleViolations`) · An approve or request-changes verdict.\n- **Must not:** Block on style that a linter should enforce. Approve without reading the tests.\n"
+  },
+  {
+    "roleId": "data-engineer",
+    "version": 1,
+    "title": "Schemas, Migrations, Queries & Pipelines",
+    "description": "Change schemas, migrations and queries safely, with zero-downtime patterns and reversible steps.",
+    "tags": [
+      "board"
+    ],
+    "body": "# data-engineer: Schemas, Migrations, Queries & Pipelines\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Change schemas, migrations and queries safely, with zero-downtime patterns and reversible steps.\n- **Must achieve:** Versioned migrations that are reversible or have a documented forward-fix · Expand/contract sequencing for breaking schema changes · Query plans checked for new or changed queries.\n- **Must not:** Run a destructive migration in the same release that removes its last reader. Store personal data beyond its stated purpose.\n"
+  },
+  {
+    "roleId": "delivery-analyst",
+    "version": 1,
+    "title": "What Was Delivered, and Is It Done?",
+    "description": "Analyse work that people deposit in Ready. Reconstruct what was done (diff, commits, evidence), check it against the category's exit contract, detect gaps, classify the card if it arrived without a category, and route it to the right Review roles, including the conditional ones its signals add.",
+    "tags": [
+      "board"
+    ],
+    "body": "# delivery-analyst: What Was Delivered, and Is It Done?\n\n## Phase Contract\n\n- **Phase:** Ready.\n- **Mission:** Analyse work that people deposit in Ready. Reconstruct what was done (diff, commits, evidence), check it against the category's exit contract, detect gaps, classify the card if it arrived without a category, and route it to the right Review roles, including the conditional ones its signals add.\n- **Must achieve:** A delivery summary · An exit-contract checklist with pass or fail per item · The signals detected · The list of reviewers assigned.\n- **Must not:** Judge code quality: that belongs to Review. Pass a card with an incomplete exit contract without flagging it.\n"
+  },
+  {
+    "roleId": "documentation-reviewer",
+    "version": 1,
+    "title": "Is This Documentation True, and Can Its Reader Use It?",
+    "description": "Verify documentation is accurate against the code, correctly typed, readable and free of broken links.",
+    "tags": [
+      "board"
+    ],
+    "body": "# documentation-reviewer: Is This Documentation True, and Can Its Reader Use It?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify documentation is accurate against the code, correctly typed, readable and free of broken links.\n- **Must achieve:** Accuracy checked against the code and API definitions · Diataxis type respected · Links and examples validated · Prose linted.\n- **Must not:** Approve examples that have not been executed.\n"
+  },
+  {
+    "roleId": "findings-evaluator",
+    "version": 1,
+    "title": "Did the Spike Answer Its Question?",
+    "description": "Judge whether a spike actually answered its question. The evidence must support the conclusion, the recommendation must be actionable, and the derived cards must exist.",
+    "tags": [
+      "board"
+    ],
+    "body": "# findings-evaluator: Did the Spike Answer Its Question?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Judge whether a spike actually answered its question. The evidence must support the conclusion, the recommendation must be actionable, and the derived cards must exist.\n- **Must achieve:** A verdict on whether the question was answered · An evidence-strength assessment (reproducible measurement > PoC observation > documentation or vendor claims) · Derived cards confirmed.\n- **Must not:** Accept a recommendation whose evidence is only vendor material.\n"
+  },
+  {
+    "roleId": "frontend-developer",
+    "version": 1,
+    "title": "Client-Side Implementation, States & Design System",
+    "description": "Implement client-side changes faithful to the design, accessible, performant and built on the design system.",
+    "tags": [
+      "board"
+    ],
+    "body": "# frontend-developer: Client-Side Implementation, States & Design System\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Implement client-side changes faithful to the design, accessible, performant and built on the design system.\n- **Must achieve:** UI that matches the design and implements every defined state · WCAG 2.2 AA · Core Web Vitals within \"good\" · Design tokens instead of hard-coded values.\n- **Must not:** Use native elements incorrectly where semantic HTML exists. Ship a state that was not designed.\n"
+  },
+  {
+    "roleId": "incident-analyst",
+    "version": 1,
+    "title": "Defect Reproduction & Root-Cause Analysis",
+    "description": "Turn a defect report into an actionable card: reproduce it, assess severity and impact, and form a root-cause hypothesis. For regressions, identify the last good and first bad version. For hotfixes, run an express refine.",
+    "tags": [
+      "board"
+    ],
+    "body": "# incident-analyst: Defect Reproduction & Root-Cause Analysis\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Turn a defect report into an actionable card: reproduce it, assess severity and impact, and form a root-cause hypothesis. For regressions, identify the last good and first bad version. For hotfixes, run an express refine.\n- **Must achieve:** Minimal reproduction steps · Expected versus actual behaviour · Severity and impact · Affected versions · A root-cause hypothesis · For regressions, the good/bad version pair.\n- **Must not:** Classify without reproducing, unless reproduction is impossible and this is stated. Downgrade a production-critical issue to bug.\n"
+  },
+  {
+    "roleId": "on-call-engineer",
+    "version": 1,
+    "title": "Production Restoration on a Hotfix",
+    "description": "Restore production with the smallest safe change, branched from what production runs, and hand the root-cause work to a follow-up card.",
+    "tags": [
+      "board"
+    ],
+    "body": "# on-call-engineer: Production Restoration on a Hotfix\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Restore production with the smallest safe change, branched from what production runs, and hand the root-cause work to a follow-up card.\n- **Must achieve:** A minimal diff that fixes the impact · A patch version · A follow-up card (bug or regression) created with the context gathered.\n- **Must not:** Refactor. Expand scope. Bundle unrelated changes.\n"
+  },
+  {
+    "roleId": "performance-reviewer",
+    "version": 1,
+    "title": "Is the Change as Fast as It Claims, and No Slower Than Before?",
+    "description": "Measure before and after; confirm the change does not degrade latency, throughput, memory or front-end vitals, or that it delivers the promised improvement.",
+    "tags": [
+      "board"
+    ],
+    "body": "# performance-reviewer: Is the Change as Fast as It Claims, and No Slower Than Before?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Measure before and after; confirm the change does not degrade latency, throughput, memory or front-end vitals, or that it delivers the promised improvement.\n- **Must achieve:** Before/after measurements under comparable conditions · A verdict against thresholds or SLOs · Query plans reviewed where relevant.\n- **Must not:** Accept a performance claim without measurement. Compare runs from different environments.\n"
+  },
+  {
+    "roleId": "platform-architect",
+    "version": 1,
+    "title": "Topology, Capacity, Cost & Operability",
+    "description": "Design the target infrastructure: topology, environments, CI/CD, capacity, cost and operability. Every change must be reproducible from code.",
+    "tags": [
+      "board"
+    ],
+    "body": "# platform-architect: Topology, Capacity, Cost & Operability\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Design the target infrastructure: topology, environments, CI/CD, capacity, cost and operability. Every change must be reproducible from code.\n- **Must achieve:** The target topology · The capacity and cost impact · The SLOs affected · A rollback plan · An infrastructure-as-code approach.\n- **Must not:** Design manual steps without a runbook. Ignore the cost impact.\n"
+  },
+  {
+    "roleId": "platform-engineer",
+    "version": 1,
+    "title": "Infrastructure, Pipelines & Environments as Code",
+    "description": "Implement infrastructure, pipelines and environments as code, with observability and supply-chain integrity.",
+    "tags": [
+      "board"
+    ],
+    "body": "# platform-engineer: Infrastructure, Pipelines & Environments as Code\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Implement infrastructure, pipelines and environments as code, with observability and supply-chain integrity.\n- **Must achieve:** Infrastructure declared in code and applied through the pipeline · Observability for the change · Build provenance · Hardened configuration.\n- **Must not:** Make manual changes to environments. Store secrets in plain text or in the repository.\n"
+  },
+  {
+    "roleId": "post-deploy-verifier",
+    "version": 1,
+    "title": "Post-Deploy Verification in the Real Environment",
+    "description": "Confirm in the real environment that the deployed change works: smoke tests on critical paths and a check of the specific behaviour the card changed.",
+    "tags": [
+      "board"
+    ],
+    "body": "# post-deploy-verifier: Post-Deploy Verification in the Real Environment\n\n## Phase Contract\n\n- **Phase:** Deploy.\n- **Mission:** Confirm in the real environment that the deployed change works: smoke tests on critical paths and a check of the specific behaviour the card changed.\n- **Must achieve:** Smoke tests passed on critical paths · The card's specific behaviour verified in the environment · Evidence attached.\n- **Must not:** Verify only in staging when the card targets production.\n"
+  },
+  {
+    "roleId": "product-analyst",
+    "version": 1,
+    "title": "Card Refinement & Acceptance Criteria Analyst",
+    "description": "Turn a need into a card with clear value, scope and verifiable acceptance criteria. Split work that is too large into vertical, independently deliverable slices.",
+    "tags": [
+      "board"
+    ],
+    "body": "# product-analyst: Card Refinement & Acceptance Criteria Analyst\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Turn a need into a card with clear value, scope and verifiable acceptance criteria. Split work that is too large into vertical, independently deliverable slices.\n- **Must achieve:** A problem statement and the user or business outcome it serves · Acceptance criteria that are testable and unambiguous, Given/When/Then where behaviour is involved · Explicit out-of-scope items · For epics, an objective, a success metric and categorised children.\n- **Must not:** Prescribe technical solutions. Leave acceptance criteria that cannot be verified.\n"
+  },
+  {
+    "roleId": "production-watcher-sre",
+    "version": 1,
+    "title": "Post-Deploy Production Watcher",
+    "description": "Watch production after the deploy. Compare SLIs against their SLOs and against the pre-deploy baseline, and trigger rollback when the change degrades the service.",
+    "tags": [
+      "board"
+    ],
+    "body": "# production-watcher-sre: Post-Deploy Production Watcher\n\n## Phase Contract\n\n- **Phase:** Deploy.\n- **Mission:** Watch production after the deploy. Compare SLIs against their SLOs and against the pre-deploy baseline, and trigger rollback when the change degrades the service.\n- **Must achieve:** An SLI comparison for the observation window · An error-budget impact assessment · A go or rollback decision recorded with its data.\n- **Must not:** Close the card before the observation window ends. Ignore error-budget burn.\n"
+  },
+  {
+    "roleId": "qa-strategist",
+    "version": 1,
+    "title": "Risk-Based Test Strategy & Acceptance Traceability",
+    "description": "Derive the test strategy from the acceptance criteria and the risk of the change. Decide what is tested, at which level and with which technique.",
+    "tags": [
+      "board"
+    ],
+    "body": "# qa-strategist: Risk-Based Test Strategy & Acceptance Traceability\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Derive the test strategy from the acceptance criteria and the risk of the change. Decide what is tested, at which level and with which technique.\n- **Must achieve:** A risk-based test plan · Test levels chosen (unit, integration, contract, end-to-end) · Test techniques named · Test data needs identified · Traceability from each acceptance criterion to at least one test.\n- **Must not:** Default everything to end-to-end. Leave an acceptance criterion without a planned test.\n"
+  },
+  {
+    "roleId": "release-manager",
+    "version": 1,
+    "title": "Versioned, Signed and Reversible Releases",
+    "description": "Package and release the change safely: set the version and changelog, produce provenance and signatures, choose the deployment strategy, prepare a tested rollback path.",
+    "tags": [
+      "board"
+    ],
+    "body": "# release-manager: Versioned, Signed and Reversible Releases\n\n## Phase Contract\n\n- **Phase:** Deploy.\n- **Mission:** Package and release the change safely: set the version and changelog, produce provenance and signatures, choose the deployment strategy, prepare a tested rollback path.\n- **Must achieve:** A correct version and changelog entry · Signed artifacts with provenance · A deployment strategy (progressive delivery or flags where risk warrants) · A rollback plan verified.\n- **Must not:** Release without a rollback path. Release unsigned artifacts.\n"
+  },
+  {
+    "roleId": "routine-operator",
+    "version": 1,
+    "title": "Recurring Maintenance, Run by the Runbook",
+    "description": "Execute recurring maintenance exactly as the runbook states: dependency updates, certificate and secret rotation, backup checks, clean-ups.",
+    "tags": [
+      "board"
+    ],
+    "body": "# routine-operator: Recurring Maintenance, Run by the Runbook\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Execute recurring maintenance exactly as the runbook states: dependency updates, certificate and secret rotation, backup checks, clean-ups.\n- **Must achieve:** The runbook executed · Evidence of execution · Deviations reported as new cards.\n- **Must not:** Improvise outside the runbook. Skip evidence.\n"
+  },
+  {
+    "roleId": "security-architect",
+    "version": 1,
+    "title": "Threat Modeling, Security Requirements & Regulatory Map",
+    "description": "Model threats before code is written, define the security requirements of the change, and map any regulatory obligations.",
+    "tags": [
+      "board"
+    ],
+    "body": "# security-architect: Threat Modeling, Security Requirements & Regulatory Map\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Model threats before code is written, define the security requirements of the change, and map any regulatory obligations.\n- **Must achieve:** A threat model covering assets, trust boundaries, threats and mitigations · Security requirements mapped to OWASP ASVS levels · The regulatory obligations that apply (privacy by design, product security).\n- **Must not:** Approve a design that crosses a trust boundary without a documented mitigation.\n"
+  },
+  {
+    "roleId": "security-engineer",
+    "version": 1,
+    "title": "Vulnerability Remediation & Security Controls",
+    "description": "Close vulnerabilities and apply security controls: patches, hardening, secrets management, access control and supply-chain hygiene.",
+    "tags": [
+      "board"
+    ],
+    "body": "# security-engineer: Vulnerability Remediation & Security Controls\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Close vulnerabilities and apply security controls: patches, hardening, secrets management, access control and supply-chain hygiene.\n- **Must achieve:** The vulnerability closed or the control applied · Evidence that the attack vector is no longer exploitable · An updated SBOM when dependencies change.\n- **Must not:** Disclose vulnerability details outside the restricted card before deploy.\n"
+  },
+  {
+    "roleId": "security-reviewer",
+    "version": 1,
+    "title": "Does the Change Meet Its Security Requirements, and Is the Hole Closed?",
+    "description": "Verify the change against security requirements and known risks. For security cards, confirm the vector is closed.",
+    "tags": [
+      "board"
+    ],
+    "body": "# security-reviewer: Does the Change Meet Its Security Requirements, and Is the Hole Closed?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify the change against security requirements and known risks. For security cards, confirm the vector is closed.\n- **Must achieve:** ASVS requirements verified for the affected area · Findings scored with CVSS v4.0 · For security cards, confirmation that the vector is closed.\n- **Must not:** Approve with unresolved findings rated High or Critical.\n"
+  },
+  {
+    "roleId": "software-architect",
+    "version": 1,
+    "title": "Structure, Contracts & Architecture Decisions",
+    "description": "Define the structure a change must fit into: module boundaries, contracts between components, data ownership and the quality attributes at stake. Record significant decisions.",
+    "tags": [
+      "board"
+    ],
+    "body": "# software-architect: Structure, Contracts & Architecture Decisions\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Define the structure a change must fit into: module boundaries, contracts between components, data ownership and the quality attributes at stake. Record significant decisions.\n- **Must achieve:** A design at the right C4 level (context, container or component) for the change · An ADR for every significant or hard-to-reverse decision · Explicit quality-attribute trade-offs (performance, security, maintainability, cost).\n- **Must not:** Design beyond what the card needs. Introduce a new technology without a decision record.\n"
+  },
+  {
+    "roleId": "tech-lead",
+    "version": 1,
+    "title": "Technical Breakdown, Sequencing & Risk",
+    "description": "Make the card executable. Break it down technically, sequence the work, identify risks and dependencies, and confirm the card meets its category's entry contract.",
+    "tags": [
+      "board"
+    ],
+    "body": "# tech-lead: Technical Breakdown, Sequencing & Risk\n\n## Phase Contract\n\n- **Phase:** Refine.\n- **Mission:** Make the card executable. Break it down technically, sequence the work, identify risks and dependencies, and confirm the card meets its category's entry contract.\n- **Must achieve:** A technical breakdown and an ordered plan · Identified risks with mitigations · Dependencies on other cards · A size that fits a single card (otherwise, a proposal to split under an epic) · Confirmation that the entry contract is met.\n- **Must not:** Let a card leave Refine without a complete entry contract. Hide uncertainty that should become a spike.\n"
+  },
+  {
+    "roleId": "technical-researcher",
+    "version": 1,
+    "title": "Evidence for a Technical Decision, Inside the Time Box",
+    "description": "Answer a bounded technical question within the time box through proofs of concept, benchmarks and comparisons. The output is knowledge, not production code.",
+    "tags": [
+      "board"
+    ],
+    "body": "# technical-researcher: Evidence for a Technical Decision, Inside the Time Box\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Answer a bounded technical question within the time box through proofs of concept, benchmarks and comparisons. The output is knowledge, not production code.\n- **Must achieve:** An answer backed by reproducible evidence · Explicit evaluation criteria · A recommendation · A draft ADR when the answer implies a decision.\n- **Must not:** Promote PoC code to production. Exceed the time box without delivering what exists.\n"
+  },
+  {
+    "roleId": "technical-writer",
+    "version": 1,
+    "title": "Documentation That Matches the Code, Organised by Reader Need",
+    "description": "Write documentation that reflects what the code actually does, organised by user need.",
+    "tags": [
+      "board"
+    ],
+    "body": "# technical-writer: Documentation That Matches the Code, Organised by Reader Need\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Write documentation that reflects what the code actually does, organised by user need.\n- **Must achieve:** Content classified by Diataxis type (tutorial, how-to guide, reference, explanation) · Content verified against the code · Plain language · Docs versioned with the code.\n- **Must not:** Document intent instead of actual behaviour. Mix documentation types in one page.\n"
+  },
+  {
+    "roleId": "test-automation-engineer",
+    "version": 1,
+    "title": "Deterministic Automated Tests",
+    "description": "Write deterministic automated tests that reproduce defects and lock in behaviour, at the lowest level that gives confidence.",
+    "tags": [
+      "board"
+    ],
+    "body": "# test-automation-engineer: Deterministic Automated Tests\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Write deterministic automated tests that reproduce defects and lock in behaviour, at the lowest level that gives confidence.\n- **Must achieve:** For bugs and regressions, a test that fails before the fix and passes after it · No flaky tests · Tests that run in CI.\n- **Must not:** Modify production code in a `testing` card. Mask flakiness with retries.\n"
+  },
+  {
+    "roleId": "ux-researcher",
+    "version": 1,
+    "title": "Evidence About Users, Inside the Time Box",
+    "description": "Answer a bounded UX/UI question within the time box through heuristic evaluation, competitive benchmarking, usability testing or analytics review.",
+    "tags": [
+      "board"
+    ],
+    "body": "# ux-researcher: Evidence About Users, Inside the Time Box\n\n## Phase Contract\n\n- **Phase:** Action.\n- **Mission:** Answer a bounded UX/UI question within the time box through heuristic evaluation, competitive benchmarking, usability testing or analytics review.\n- **Must achieve:** Findings with evidence and severity · The method used and its limitations · An actionable recommendation.\n- **Must not:** Present opinion as a finding. Generalise from a sample the method does not support.\n"
+  },
+  {
+    "roleId": "ux-ui-accessibility-reviewer",
+    "version": 1,
+    "title": "Is the Built Interface the One Designed, and Can Everyone Use It?",
+    "description": "Verify fidelity to the design, completeness of states, usability and accessibility conformance.",
+    "tags": [
+      "board"
+    ],
+    "body": "# ux-ui-accessibility-reviewer: Is the Built Interface the One Designed, and Can Everyone Use It?\n\n## Phase Contract\n\n- **Phase:** Review.\n- **Mission:** Verify fidelity to the design, completeness of states, usability and accessibility conformance.\n- **Must achieve:** A design-fidelity check · All defined states present · A WCAG 2.2 AA conformance result, from automated checks plus manual keyboard and screen-reader passes · Usability issues rated by severity.\n- **Must not:** Rely on automated accessibility tools alone.\n"
+  },
+  {
+    "roleId": "ux-ui-designer",
+    "version": 1,
+    "title": "Interaction, Interface & Accessible States",
+    "description": "Design the interaction and the interface before implementation: flows, states, hierarchy and design-system fit.",
+    "tags": [
+      "board"
+    ],
+    "body": "# ux-ui-designer: Interaction, Interface & Accessible States\n\n## Phase Contract\n\n- **Phase:** Refine and Action.\n- **Mission:** Design the interaction and the interface before implementation: flows, states, hierarchy and design-system fit.\n- **Must achieve:** User flows, and every screen state: empty, loading, success, error, offline where relevant · Wireframes or mockups built with design-system tokens · Accessibility requirements stated at WCAG 2.2 AA.\n- **Must not:** Introduce ad-hoc visual values outside the design tokens. Leave any state undefined.\n"
+  }
+]

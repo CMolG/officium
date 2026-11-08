@@ -1,0 +1,60 @@
+diff --git a/dist/index.js b/dist/index.js
+index 402fee19053394d5a404bc818d9dff4348cc1e21..fec33c771b27367f1a7a732026134cf632562bcd 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -126,10 +126,15 @@ var DismissableLayer = /* @__PURE__ */ React.forwardRef(
+       if (!event.defaultPrevented) onDismiss?.();
+     }, ownerDocument);
+     const isHighestLayer = node ? index === layers.length - 1 : false;
++    // javadaba patch (card://JAVA-1315 [temporary]): every layer listens and asks the LIVE stack at keydown time
++    // whether it is on top. Upstream (1.1.15+) listens only while the layer was topmost at its last render, so an
++    // Escape right after a layer opens dismissed the one below. https://github.com/radix-ui/primitives/issues/4143
+     const handleKeyDown = (0, import_react_use_callback_ref.useCallbackRef)((event) => {
+       if (event.key !== "Escape") {
+         return;
+       }
++      const live = Array.from(context.layers);
++      if (!node || live.indexOf(node) !== live.length - 1) return;
+       onEscapeKeyDown?.(event);
+       if (!event.defaultPrevented && onDismiss) {
+         event.preventDefault();
+@@ -137,9 +142,6 @@ var DismissableLayer = /* @__PURE__ */ React.forwardRef(
+       }
+     });
+     React.useEffect(() => {
+-      if (!isHighestLayer) {
+-        return;
+-      }
+       ownerDocument.addEventListener("keydown", handleKeyDown, { capture: true });
+       return () => ownerDocument.removeEventListener("keydown", handleKeyDown, { capture: true });
+     }, [ownerDocument, isHighestLayer, handleKeyDown]);
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 8b8b80f54b3b11264b3156f13a537e3d7d534490..e9169ece795848db448d8b97aff5117140af2437 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -88,10 +88,15 @@ var DismissableLayer = /* @__PURE__ */ React.forwardRef(
+       if (!event.defaultPrevented) onDismiss?.();
+     }, ownerDocument);
+     const isHighestLayer = node ? index === layers.length - 1 : false;
++    // javadaba patch (card://JAVA-1315 [temporary]): every layer listens and asks the LIVE stack at keydown time
++    // whether it is on top. Upstream (1.1.15+) listens only while the layer was topmost at its last render, so an
++    // Escape right after a layer opens dismissed the one below. https://github.com/radix-ui/primitives/issues/4143
+     const handleKeyDown = useCallbackRef((event) => {
+       if (event.key !== "Escape") {
+         return;
+       }
++      const live = Array.from(context.layers);
++      if (!node || live.indexOf(node) !== live.length - 1) return;
+       onEscapeKeyDown?.(event);
+       if (!event.defaultPrevented && onDismiss) {
+         event.preventDefault();
+@@ -99,9 +104,6 @@ var DismissableLayer = /* @__PURE__ */ React.forwardRef(
+       }
+     });
+     React.useEffect(() => {
+-      if (!isHighestLayer) {
+-        return;
+-      }
+       ownerDocument.addEventListener("keydown", handleKeyDown, { capture: true });
+       return () => ownerDocument.removeEventListener("keydown", handleKeyDown, { capture: true });
+     }, [ownerDocument, isHighestLayer, handleKeyDown]);

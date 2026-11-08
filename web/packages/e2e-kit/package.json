@@ -1,0 +1,66 @@
+{
+  "name": "@javadaba/e2e-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The shared Playwright kit for the ecosystem's e2e suites: the failOnError console/pageerror fixture (promoted from javadaba-landing/e2e/fixtures.ts, where it was reimplemented three times), the forced-state helpers that make the five mandatory states testable without a backend, the dev-login door, the viewport matrix and the actionable-element sweep. Test-time only: no runtime dependency, consumed as a devDependency. See doc://history/plans/2026-08-29-e2e-estados-frontend.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./fixtures": {
+      "types": "./src/fixtures.ts",
+      "default": "./src/fixtures.ts"
+    },
+    "./states": {
+      "types": "./src/states.ts",
+      "default": "./src/states.ts"
+    },
+    "./account-sheet": {
+      "types": "./src/account-sheet.ts",
+      "default": "./src/account-sheet.ts"
+    },
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./src/auth.ts"
+    },
+    "./viewports": {
+      "types": "./src/viewports.ts",
+      "default": "./src/viewports.ts"
+    },
+    "./sweep": {
+      "types": "./src/sweep.ts",
+      "default": "./src/sweep.ts"
+    },
+    "./release-gate": {
+      "types": "./src/release-gate.ts",
+      "default": "./src/release-gate.ts"
+    },
+    "./images": {
+      "types": "./src/images.ts",
+      "default": "./src/images.ts"
+    },
+    "./fonts": {
+      "types": "./src/fonts.ts",
+      "default": "./src/fonts.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "node --test src/kit.test.ts"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.61.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

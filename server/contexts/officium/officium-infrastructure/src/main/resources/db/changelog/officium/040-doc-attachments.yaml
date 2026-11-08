@@ -1,0 +1,30 @@
+databaseChangeLog:
+  # JAVA-798: the files and images a documentation page carries (ADR 0023). The bytes live here, next
+  # to the page, and a page reaches one as doc://<page>/_files/<name>. Rows are immutable. Expand only:
+  # the previous release ignores the table, and a purged page takes its files with it.
+  - changeSet:
+      id: 040-doc-attachments
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_attachment (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                page_id uuid not null references officium_doc_page(id) on delete cascade,
+                name text not null,
+                kind text not null,
+                content_type text not null,
+                original_bytes bigint not null,
+                stored_bytes bigint not null,
+                width integer not null default 0,
+                height integer not null default 0,
+                sha256 text not null,
+                data bytea not null,
+                created_by jsonb not null,
+                created_at timestamptz not null,
+                unique (page_id, name)
+              );
+              create index if not exists officium_doc_attachment_project on officium_doc_attachment (project_id);
+              create index if not exists officium_doc_attachment_created on officium_doc_attachment (created_at);

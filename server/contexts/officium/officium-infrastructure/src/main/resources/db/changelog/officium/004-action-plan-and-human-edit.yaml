@@ -1,0 +1,33 @@
+databaseChangeLog:
+  # User request, 2026-09-23. A card has two texts: its description and its ACTION PLAN (how it
+  # will be tackled, written by whoever picks it up -- a person or an agent). And it remembers the
+  # last time a PERSON changed what it says, and whether an agent has acknowledged that since
+  # (`human_edit_reviewed_at`), so an agent can find the "needs a person" cards someone answered.
+  # All nullable: existing rows have no plan and no human edit, which is the truth about them.
+  - changeSet:
+      id: 004-action-plan-and-human-edit
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card add column if not exists action_plan text;
+              alter table officium_card add column if not exists human_edited_at timestamptz;
+              alter table officium_card add column if not exists human_edited_by jsonb;
+              alter table officium_card add column if not exists human_edit_reviewed_at timestamptz;
+              create index if not exists idx_officium_card_human_edit_pending
+                on officium_card(project_id)
+                where human_edited_at is not null
+                  and (human_edit_reviewed_at is null or human_edit_reviewed_at < human_edited_at);
+  # The trigram adapter (`officium.search.provider=postgres`, the rollback path) searches the plan
+  # too; same tolerance as 003 when `pg_trgm` is not available.
+  - changeSet:
+      id: 004-action-plan-trgm
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create index if not exists idx_officium_card_action_plan_trgm
+                on officium_card using gin (action_plan gin_trgm_ops);
+            failOnError: false

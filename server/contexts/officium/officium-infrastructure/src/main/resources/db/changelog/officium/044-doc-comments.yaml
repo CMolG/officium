@@ -1,0 +1,36 @@
+databaseChangeLog:
+  # JAVA-797: comments on documentation pages. A quote (W3C TextQuoteSelector: exact, prefix, suffix) anchors a
+  # thread to words the Markdown still holds, so the body stays clean. Keyed by page id: a move keeps them and a
+  # purge deletes them. Expand only: the previous release ignores both tables.
+  - changeSet:
+      id: 044-doc-comments
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_comment (
+                id uuid primary key,
+                page_id uuid not null references officium_doc_page(id) on delete cascade,
+                parent_id uuid references officium_doc_comment(id) on delete cascade,
+                author jsonb not null,
+                text text not null,
+                quote_exact text,
+                quote_prefix text,
+                quote_suffix text,
+                resolved_at timestamptz,
+                resolved_by jsonb,
+                deleted_at timestamptz,
+                created_at timestamptz not null,
+                updated_at timestamptz not null
+              );
+              create index if not exists officium_doc_comment_page on officium_doc_comment (page_id, created_at);
+              create index if not exists officium_doc_comment_parent on officium_doc_comment (parent_id);
+              create table if not exists officium_doc_comment_reaction (
+                comment_id uuid not null references officium_doc_comment(id) on delete cascade,
+                emoji text not null,
+                account_id uuid not null,
+                name text not null,
+                at timestamptz not null,
+                primary key (comment_id, emoji, account_id)
+              );

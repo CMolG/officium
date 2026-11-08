@@ -1,0 +1,37 @@
+databaseChangeLog:
+  # JAVA-675: one heartbeat token per DEVICE, not per account, so setting a second machine up no
+  # longer silences the first. Each existing token becomes one device with no machine name; its hash
+  # and creation stay, so the machines already beating with it keep working.
+  - changeSet:
+      id: 019-heartbeat-devices
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_heartbeat_token add column id uuid;
+              update officium_heartbeat_token set id = gen_random_uuid() where id is null;
+              alter table officium_heartbeat_token alter column id set not null;
+              alter table officium_heartbeat_token drop constraint officium_heartbeat_token_pkey;
+              alter table officium_heartbeat_token add primary key (id);
+              alter table officium_heartbeat_token add column machine text;
+              alter table officium_heartbeat_token add column last_used_at timestamptz;
+              create index officium_heartbeat_token_account_idx on officium_heartbeat_token (account_id);
+  # The one-time codes a machine trades for its own token, minted by the MCP (heartbeat.setup) and
+  # redeemed by the setup command. Hash only, ten minutes, one use; purged with the account.
+  - changeSet:
+      id: 019-heartbeat-codes
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table officium_heartbeat_code (
+                id uuid primary key,
+                account_id uuid not null,
+                code_hash text not null unique,
+                expires_at timestamptz not null,
+                consumed_at timestamptz,
+                created_at timestamptz not null
+              );
+              create index officium_heartbeat_code_account_idx on officium_heartbeat_code (account_id);

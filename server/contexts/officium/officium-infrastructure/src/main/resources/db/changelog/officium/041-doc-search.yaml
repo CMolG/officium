@@ -1,0 +1,19 @@
+databaseChangeLog:
+  # JAVA-800: full-text search over the documentation. The vector is generated, so every insert and
+  # update of the old release fills it too (expand only). Weight A: the title, the raw path (an exact
+  # path or identifier such as contracts/officium-api stays one token under 'simple') and the path's
+  # words. Weight B: the first 300,000 characters of the body, which keeps a huge page under
+  # tsvector's 1 MB limit and so keeps it writable.
+  - changeSet:
+      id: 041-doc-search
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_doc_page add column if not exists search_vector tsvector generated always as (
+                setweight(to_tsvector('simple', coalesce(title, '') || ' ' || path || ' '
+                  || replace(replace(path, '/', ' '), '-', ' ')), 'A')
+                || setweight(to_tsvector('simple', left(coalesce(body, ''), 300000)), 'B')
+              ) stored;
+              create index if not exists ix_officium_doc_page_search on officium_doc_page using gin (search_vector);

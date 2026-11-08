@@ -1,0 +1,15 @@
+databaseChangeLog:
+  # JAVA-524: a comment can answer another comment of the same card, so a card holds threads.
+  # Null is a top-level comment, which is every comment written before this. Deleting a comment
+  # never takes other people's replies with it: they lose their parent and show as top-level.
+  # That the parent is on the same card is the service's rule (CardCommentService).
+  - changeSet:
+      id: 016-comment-replies
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card_comment add column if not exists parent_id uuid
+                references officium_card_comment(id) on delete set null;
+              create index if not exists idx_officium_card_comment_parent on officium_card_comment(parent_id);

@@ -1,0 +1,28 @@
+databaseChangeLog:
+  # JAVA-1376: the board shows each card's logged hours from the card view, and it learns of a card
+  # that changed from `GET .../cards/changes?since=`. Only a manual entry moved the card (in Java,
+  # `CardTimeService.touchCard`); the time an agent run or a session report imputes did not, so the
+  # board would never see it. A trigger, like 006's: three writers insert entries, and a marker set
+  # by hand in each is one forgotten call away from hours that silently stop updating.
+  - changeSet:
+      id: 032-time-entry-touches-card
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              create or replace function officium_time_entry_touch_card() returns trigger language plpgsql as $$
+              begin
+                if tg_op = 'DELETE' then
+                  update officium_card set changed_at = clock_timestamp() where id = old.card_id;
+                else
+                  update officium_card set changed_at = clock_timestamp() where id = new.card_id;
+                end if;
+                return null;
+              end $$;
+        - sql:
+            sql: |
+              drop trigger if exists officium_time_entry_changed on officium_card_time_entry;
+              create trigger officium_time_entry_changed after insert or update or delete on officium_card_time_entry
+                for each row execute function officium_time_entry_touch_card();

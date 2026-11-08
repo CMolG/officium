@@ -1,0 +1,925 @@
+{
+  "generatedOn": "2026-11-05",
+  "catalog": {
+    "total": 149,
+    "read": 63,
+    "write": 86,
+    "scopes": [
+      "officium:read",
+      "officium:write"
+    ],
+    "families": [
+      {
+        "name": "docs",
+        "total": 49,
+        "read": 20,
+        "write": 29
+      },
+      {
+        "name": "cards",
+        "total": 33,
+        "read": 11,
+        "write": 22
+      },
+      {
+        "name": "projects",
+        "total": 19,
+        "read": 8,
+        "write": 11
+      },
+      {
+        "name": "teams",
+        "total": 8,
+        "read": 1,
+        "write": 7
+      },
+      {
+        "name": "sprints",
+        "total": 6,
+        "read": 1,
+        "write": 5
+      },
+      {
+        "name": "autoloop",
+        "total": 4,
+        "read": 1,
+        "write": 3
+      },
+      {
+        "name": "profiles",
+        "total": 4,
+        "read": 2,
+        "write": 2
+      },
+      {
+        "name": "github",
+        "total": 3,
+        "read": 1,
+        "write": 2
+      },
+      {
+        "name": "backlog",
+        "total": 2,
+        "read": 1,
+        "write": 1
+      },
+      {
+        "name": "mods",
+        "total": 2,
+        "read": 2,
+        "write": 0
+      },
+      {
+        "name": "organization",
+        "total": 2,
+        "read": 2,
+        "write": 0
+      },
+      {
+        "name": "roles",
+        "total": 2,
+        "read": 2,
+        "write": 0
+      },
+      {
+        "name": "summons",
+        "total": 2,
+        "read": 1,
+        "write": 1
+      },
+      {
+        "name": "tests",
+        "total": 2,
+        "read": 2,
+        "write": 0
+      },
+      {
+        "name": "files",
+        "total": 1,
+        "read": 0,
+        "write": 1
+      },
+      {
+        "name": "forms",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "harness",
+        "total": 1,
+        "read": 0,
+        "write": 1
+      },
+      {
+        "name": "heartbeat",
+        "total": 1,
+        "read": 0,
+        "write": 1
+      },
+      {
+        "name": "members",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "meta",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "metrics",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "presence",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "sessions",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "usage",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      },
+      {
+        "name": "value",
+        "total": 1,
+        "read": 1,
+        "write": 0
+      }
+    ],
+    "operations": [
+      {
+        "key": "meta.states",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.create",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.setFormLanguages",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.setDefinitionOfDone",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.priorFailures",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.setQualitySettings",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.roleMatrix",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.setRoleMatrix",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.executionMode",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.setExecutionMode",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.precedence",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.setPrecedence",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.previewPrecedence",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.previewPrecedenceBackfill",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.applyPrecedenceBackfill",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "members.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.search",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.next",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.unit",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.setCheckpoint",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.needsHuman",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.activity",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.create",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.acknowledgeHumanEdit",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.move",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.setWorkflow",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.setRunState",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.setActivelyWorking",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.reportStatus",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.working",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.workingEverywhere",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.resumable",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.setExecutor",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.link",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.unlink",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.comment",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.logTime",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.requestHuman",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.attachForm",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "backlog.importMarkdown",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "backlog.exportMarkdown",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "files.connect",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "usage.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "sprints.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "sprints.create",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "sprints.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "sprints.start",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "sprints.complete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "sprints.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.setSprint",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "metrics.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "value.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "organization.people",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "organization.collaborators",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "teams.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "teams.create",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.addMember",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.removeMember",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.grantProject",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "teams.revokeProject",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.search",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.upsert",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.templates.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.schema",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.lint",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.tree",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.node.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.node.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.changelog.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.changelog.mark",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.changelog.record",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "tests.runs",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "tests.suites",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.importCode",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "github.repositories",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "github.connect",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "github.disconnect",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "sessions.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.queue",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.unqueue",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "heartbeat.setup",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.requestAction",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "cards.requests",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "cards.closeRequest",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "presence.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "summons.send",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "summons.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.history",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.revision.restore",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.revision.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.settings.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.settings.update",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.presence",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.publish",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.archive",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.unarchive",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.drafts",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.archived",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.trash",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.restore",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.purge",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.move",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.duplicate",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.backlinks",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.starred",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.star",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.unstar",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.recent",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.view",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.attachments.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.attachments.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.attachments.upload",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.attachments.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "docs.comments.add",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.edit",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.resolve",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.unresolve",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.react",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "docs.comments.unreact",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "profiles.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "profiles.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "profiles.upsert",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "profiles.activate",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "roles.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "roles.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "mods.list",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "mods.get",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.integrationGate",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "projects.setIntegrationGate",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "autoloop.heartbeat",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "autoloop.status",
+        "mode": "read",
+        "scope": "officium:read"
+      },
+      {
+        "key": "autoloop.start",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "autoloop.stop",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "projects.delete",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "harness.setup",
+        "mode": "write",
+        "scope": "officium:write"
+      },
+      {
+        "key": "forms.lint",
+        "mode": "read",
+        "scope": "officium:read"
+      }
+    ]
+  },
+  "board": {
+    "from": "2026-10-05",
+    "to": "2026-11-01",
+    "weeks": 4,
+    "delivered": 518,
+    "deliveredPerWeek": 129.5,
+    "deliveredByAgents": 518,
+    "deliveredByPeople": 0,
+    "reviewed": 443,
+    "passedFirstTime": 360,
+    "sentBackBeforePassing": 83,
+    "passedFirstTimePercent": 81,
+    "reworkCap": 3
+  }
+}

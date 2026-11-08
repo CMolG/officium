@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # JAVA-1446: a project's standing Definition of Done. Expand only: a column with a default the previous release ignores,
+  # so a row written before the column exists reads as no checklist.
+  - changeSet:
+      id: 053-project-definition-of-done
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: alter table officium_project add column if not exists definition_of_done text[] not null default '{}';
+      rollback:
+        - sql:
+            sql: alter table officium_project drop column if exists definition_of_done;

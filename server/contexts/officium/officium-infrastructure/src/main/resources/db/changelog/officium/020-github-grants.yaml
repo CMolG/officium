@@ -1,0 +1,30 @@
+databaseChangeLog:
+  # JAVA-397: an installed repository is choosable only by an account GitHub says can reach it. A
+  # grant is what a user access token listed when that account authorized with GitHub: no GitHub
+  # identity is kept, only account <-> repository. Grants go with the repository's installation
+  # (cascade) and with the account (JdbcOfficiumAccountData). A state is the OAuth anti-forgery value,
+  # stored hashed, bound to the account that started the flow, used once and for ten minutes.
+  - changeSet:
+      id: 020-github-grants
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_github_grant (
+                account_id uuid not null,
+                repo text not null references officium_github_repository(repo) on delete cascade,
+                installation_id bigint not null,
+                granted_at timestamptz not null,
+                primary key (account_id, repo)
+              );
+              create index if not exists ix_officium_github_grant_repo
+                on officium_github_grant (repo);
+              create table if not exists officium_github_oauth_state (
+                state_hash text primary key,
+                account_id uuid not null,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                expires_at timestamptz not null
+              );
+              create index if not exists ix_officium_github_oauth_state_expires
+                on officium_github_oauth_state (expires_at);

@@ -1,0 +1,14 @@
+{
+  "name": "officium-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Officium Local, web: the board, the backlog and the docs of the self-hosted edition.",
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @javadaba/officium build",
+    "dev": "pnpm --filter @javadaba/officium dev"
+  }
+}

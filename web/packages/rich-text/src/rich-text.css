@@ -1,0 +1,502 @@
+/*
+ * Formatted text inside a product surface (`.jd-rich-text`): what `MarkdownView` draws and what
+ * `MarkdownEditor` edits, so reading a text and editing it look the same.
+ *
+ * Only the DESCENDANTS are styled, and inside `@layer components`: size, colour and spacing of
+ * the block itself stay with the caller's utilities, which must be able to win. Every colour and
+ * radius is a `--jd-*` token (`packages/ui/tokens.css`), so the text follows whatever surface it
+ * sits on. Tailwind's preflight strips lists, headings and margins; this puts back what a reader
+ * needs and nothing more. Fabula's book pages keep their own typography (`.book-editor-content`):
+ * a printed page and a card do not change for the same reasons.
+ */
+@layer components {
+  .jd-rich-text {
+    overflow-wrap: anywhere;
+  }
+
+  .jd-rich-text > * + * {
+    margin-top: 0.75em;
+  }
+
+  .jd-rich-text :where(h1, h2, h3, h4, h5, h6) {
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--jd-ink);
+  }
+
+  .jd-rich-text > :where(h1, h2, h3, h4, h5, h6):not(:first-child) {
+    margin-top: 1.25em;
+  }
+
+  .jd-rich-text h1 {
+    font-size: 1.375em;
+  }
+
+  .jd-rich-text h2 {
+    font-size: 1.1875em;
+  }
+
+  .jd-rich-text h3 {
+    font-size: 1.0625em;
+  }
+
+  .jd-rich-text :where(h4, h5, h6) {
+    font-size: 1em;
+  }
+
+  .jd-rich-text :where(strong, b) {
+    font-weight: 700;
+  }
+
+  .jd-rich-text :where(ul, ol) {
+    padding-left: 1.5em;
+  }
+
+  .jd-rich-text ul {
+    list-style: disc;
+  }
+
+  .jd-rich-text ol {
+    list-style: decimal;
+  }
+
+  .jd-rich-text li + li,
+  .jd-rich-text li > :where(ul, ol) {
+    margin-top: 0.25em;
+  }
+
+  .jd-rich-text li::marker {
+    color: var(--jd-muted);
+  }
+
+  /* Checklists: the box sits on the first line of its item, whatever the item holds. */
+  .jd-rich-text ul[data-type="taskList"] {
+    list-style: none;
+    padding-left: 0.125em;
+  }
+
+  .jd-rich-text li[data-type="taskItem"] {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+  }
+
+  .jd-rich-text li[data-type="taskItem"] > label,
+  .jd-rich-text li[data-type="taskItem"] > input {
+    flex-shrink: 0;
+    margin-top: 0.3em;
+  }
+
+  .jd-rich-text li[data-type="taskItem"] input[type="checkbox"] {
+    width: 1em;
+    height: 1em;
+    accent-color: var(--jd-ink);
+  }
+
+  .jd-rich-text li[data-type="taskItem"] input[type="checkbox"]:disabled {
+    opacity: 1;
+  }
+
+  .jd-rich-text li[data-type="taskItem"] > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .jd-rich-text li[data-checked="true"] > div {
+    color: var(--jd-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--jd-faint);
+  }
+
+  .jd-rich-text blockquote {
+    border-left: 3px solid var(--jd-line);
+    padding-left: 1em;
+    color: var(--jd-muted);
+  }
+
+  .jd-rich-text code {
+    border-radius: var(--radius-jd-xs);
+    background: color-mix(in oklab, var(--jd-ink) 6%, var(--jd-page));
+    padding: 0.1em 0.3em;
+    font-family: var(--font-jd-kicker), ui-monospace, monospace;
+    font-size: 0.875em;
+  }
+
+  /* Code sits in an ink island in every theme (Lib-Rich text): the page may be washi or dark, the island is ink. */
+  .jd-rich-text pre {
+    overflow-x: auto;
+    border-radius: var(--radius-jd-lg);
+    background: #111111;
+    color: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    padding: 1em 1.125em;
+    font-family: var(--font-jd-kicker), ui-monospace, monospace;
+    font-size: 0.8125em;
+    line-height: 1.7;
+  }
+
+  .jd-rich-text pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .jd-rich-text a {
+    color: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: currentColor;
+    text-underline-offset: 4px;
+  }
+
+  .jd-rich-text a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .jd-rich-text hr {
+    border: none;
+    border-top: 1px solid var(--jd-line);
+  }
+
+  .jd-rich-text mark {
+    border-radius: 0.15em;
+    background-color: var(--jd-accent-mark);
+    padding: 0 0.1em;
+  }
+
+  /*
+   * Tables scroll inside a frame instead of widening the dialog around them, and keep the width
+   * their columns need: the frame scrolls, the table does not collapse to its words (JAVA-1556).
+   * The editor's own wrapper (`tableWrapper`) is the same frame.
+   */
+  .jd-rich-text :where(.jd-table-scroll, .tableWrapper) {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--jd-line);
+    border-radius: var(--radius-jd-sm);
+  }
+
+  .jd-rich-text :where(.jd-table-scroll, .tableWrapper):focus-visible {
+    outline: 2px solid var(--jd-accent, currentColor);
+    outline-offset: 2px;
+  }
+
+  .jd-rich-text table {
+    display: table;
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375em;
+  }
+
+  .jd-rich-text :where(td, th) {
+    min-width: 10ch;
+    max-width: 40ch;
+    border: 1px solid var(--jd-line);
+    padding: 0.375em 0.625em;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .jd-rich-text :where(td, th) > p {
+    margin: 0;
+  }
+
+  .jd-rich-text th {
+    background: color-mix(in oklab, var(--jd-ink) 4%, var(--jd-page));
+    font-weight: 600;
+  }
+
+  /* The editable field. */
+  .jd-rich-text-editor {
+    outline: none;
+    /* 16px: iOS zooms the page into any editable text under 16px, a contenteditable included
+       (`doc://references/cookbook-de-soluciones` § iOS). */
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .jd-rich-text-editor p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: var(--jd-faint);
+    pointer-events: none;
+  }
+
+  .jd-rich-text-editor li[data-type="taskItem"] > label {
+    cursor: pointer;
+  }
+
+  /* GitHub alerts (JAVA-782; Lib-Rich text). The kind is the title's WORD and its shape; the tint only
+     reinforces them, so the five read apart in grayscale too (interface-psychology point 4). The
+     tints and inks are the status pairs of tokens.css: note = info, tip = ok, important = stone and
+     ink, warning = warn, caution = bad. */
+  .jd-rich-text .jd-alert {
+    --jd-alert-ink: var(--jd-info);
+    border-radius: var(--radius-jd-md);
+    background: var(--jd-info-bg);
+    padding: 0.875em 1em;
+    font-size: 0.875em;
+    line-height: 1.55;
+  }
+
+  .jd-rich-text .jd-alert[data-alert="tip"] {
+    --jd-alert-ink: var(--jd-ok);
+    background: var(--jd-ok-bg);
+  }
+
+  .jd-rich-text .jd-alert[data-alert="important"] {
+    --jd-alert-ink: var(--jd-ink);
+    background: var(--jd-card);
+  }
+
+  .jd-rich-text .jd-alert[data-alert="warning"] {
+    --jd-alert-ink: var(--jd-warn);
+    background: var(--jd-warn-bg);
+  }
+
+  .jd-rich-text .jd-alert[data-alert="caution"] {
+    --jd-alert-ink: var(--jd-bad);
+    background: var(--jd-bad-bg);
+  }
+
+  .jd-rich-text .jd-alert-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.8571em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--jd-alert-ink);
+  }
+
+  /* The kind's shape, drawn from the title's own color. */
+  .jd-rich-text .jd-alert-title::before {
+    content: "";
+    flex: none;
+    width: 1.25em;
+    height: 1.25em;
+    background: currentColor;
+    -webkit-mask: var(--jd-alert-shape) center / contain no-repeat;
+    mask: var(--jd-alert-shape) center / contain no-repeat;
+    --jd-alert-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 7.9v.1'/%3E%3C/svg%3E");
+  }
+
+  .jd-rich-text .jd-alert[data-alert="tip"] .jd-alert-title::before {
+    --jd-alert-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8 12.5l2.7 2.7L16 9.5'/%3E%3C/svg%3E");
+  }
+
+  .jd-rich-text .jd-alert[data-alert="important"] .jd-alert-title::before {
+    --jd-alert-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v6M12 16.1v.1'/%3E%3C/svg%3E");
+  }
+
+  .jd-rich-text .jd-alert[data-alert="warning"] .jd-alert-title::before {
+    --jd-alert-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l9.5 16.5h-19zM12 10v4.5M12 17.4v.1'/%3E%3C/svg%3E");
+  }
+
+  .jd-rich-text .jd-alert[data-alert="caution"] .jd-alert-title::before {
+    --jd-alert-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9 9l6 6M15 9l-6 6'/%3E%3C/svg%3E");
+  }
+
+  .jd-rich-text .jd-alert-body > * + * {
+    margin-top: 0.75em;
+  }
+
+  .jd-rich-text .jd-alert-title + .jd-alert-body {
+    margin-top: 0.25em;
+  }
+
+  /* <details>: a framed block whose summary is the control. The editor draws it always open. */
+  .jd-rich-text .jd-details {
+    border: 1px solid var(--jd-line);
+    border-radius: var(--radius-jd-sm);
+    padding: 0.5em 1em;
+  }
+
+  .jd-rich-text .jd-details > * + * {
+    margin-top: 0.75em;
+  }
+
+  .jd-rich-text .jd-details-summary {
+    font-weight: 600;
+    color: var(--jd-ink);
+  }
+
+  .jd-rich-text summary.jd-details-summary {
+    cursor: pointer;
+  }
+
+  /* A key, drawn as a keycap. */
+  .jd-rich-text kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.375em;
+    height: 1.375em;
+    border-radius: 6px;
+    background: var(--jd-raised);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--jd-ink) 20%, transparent), inset 0 -2px 0 color-mix(in srgb, var(--jd-ink) 12%, transparent);
+    padding: 0 0.375em;
+    font-family: var(--font-jd-body), system-ui, sans-serif;
+    font-size: 0.6875em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* A Mermaid diagram scales down to its column; its colours come from the surface's tokens. */
+  .jd-rich-text .jd-mermaid {
+    /* Mermaid measures labels with this block's font, so prose sizing must not reach it. */
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  .jd-rich-text .jd-mermaid svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .jd-rich-text .jd-mermaid figcaption {
+    margin-bottom: 0.5em;
+    font-size: 0.875em;
+    color: var(--jd-muted);
+  }
+
+  .jd-rich-text .jd-mermaid .jd-mermaid-error {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375em;
+    font-weight: 600;
+    color: var(--jd-ink);
+  }
+
+  /* A broken edit keeps the last drawing that parsed, quieter, above the source. */
+  .jd-rich-text .jd-mermaid .jd-mermaid-last {
+    opacity: 0.6;
+  }
+
+  .jd-rich-text .jd-mermaid .jd-mermaid-note {
+    font-weight: 400;
+    color: var(--jd-muted);
+  }
+
+  .jd-rich-text .jd-mermaid .jd-mermaid-reason {
+    display: block;
+    overflow-x: auto;
+    white-space: pre;
+    font-weight: 400;
+    color: var(--jd-muted);
+  }
+}
+
+/*
+ * A page edited in place (JAVA-796). The gutter holds the `+` on an empty line: the button is IN
+ * the line (a widget, layout floor L1) and its negative margins put it in the gutter without
+ * growing the line, so the text never jumps when the caret reaches an empty line. 44 px: L3.
+ */
+.jd-page-editor {
+  padding-left: 3rem;
+}
+
+.jd-page-editor .jd-insert-block {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -12px 0 -12px -44px;
+  vertical-align: middle;
+  border-radius: var(--radius-jd-sm);
+  color: var(--jd-muted);
+  cursor: pointer;
+}
+
+.jd-page-editor .jd-insert-block:hover,
+.jd-page-editor .jd-insert-block:focus-visible {
+  color: var(--jd-ink);
+  background: color-mix(in srgb, var(--jd-ink) 6%, transparent);
+}
+
+.jd-page-editor .jd-empty-line-hint {
+  color: var(--jd-faint);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* What was typed to open a menu (`/head`, `[[Dep`), marked while the menu is open. */
+.jd-page-editor .jd-suggestion {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--jd-ink) 8%, transparent);
+}
+
+/* A variable in an email field: one chip, a tint of the product's blue, deleted as one piece. */
+.jd-rich-text .jd-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  height: 1.5em;
+  border-radius: 6px;
+  background: color-mix(in oklab, #a3c2f0 45%, var(--jd-raised));
+  padding: 0 0.5em;
+  font-size: 0.8125em;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+/* Words a comment is about (JAVA-797): a tint and a dotted underline, so the mark never rests on color alone. */
+/* A commented passage reads as underlined (JAVA-1538): a solid accent line over a faint tint; hovering it shows its
+   comments, a click keeps them open. */
+.jd-rich-text .jd-comment-anchor {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--jd-accent, var(--jd-ink)) 8%, transparent);
+  text-decoration: underline solid var(--jd-accent, var(--jd-ink));
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* The selection a new comment is being written for, kept drawn while focus is in the composer. */
+.jd-rich-text .jd-comment-pending {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--jd-accent, var(--jd-ink)) 28%, transparent);
+}
+
+/* The read view draws the same marks with the CSS Custom Highlight API. */
+::highlight(jd-comment-anchor) {
+  background-color: color-mix(in srgb, var(--jd-accent, var(--jd-ink)) 8%, transparent);
+  text-decoration: underline solid var(--jd-accent, var(--jd-ink));
+  text-decoration-thickness: 2px;
+}
+
+/* A live room's carets and selections (JAVA-803): the name, in the colour of the person's avatar. */
+.jd-rich-text .jd-collab-caret {
+  position: relative;
+  margin-inline: -1px;
+  border-inline-start: 2px solid var(--jd-collab-color);
+  pointer-events: none;
+  word-break: normal;
+}
+.jd-rich-text .jd-collab-caret-label {
+  position: absolute;
+  top: -1.5em;
+  left: -2px;
+  padding: 0 0.35em;
+  border-radius: 4px 4px 4px 0;
+  background: var(--jd-collab-color);
+  color: var(--jd-page);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  user-select: none;
+}
+.jd-rich-text .jd-collab-selection {
+  background: color-mix(in srgb, var(--jd-collab-color) 25%, transparent);
+}

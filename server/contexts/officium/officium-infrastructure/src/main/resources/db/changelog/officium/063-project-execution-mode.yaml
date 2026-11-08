@@ -1,0 +1,19 @@
+databaseChangeLog:
+  # JAVA-1878: how a project's agents execute its cards, one card at a time (the default) or an epic as one unit
+  # (JAVA-1868). One row per project, replaced under its version. Expand only: a new table the previous release
+  # ignores, and a project with no row keeps today's behavior.
+  - changeSet:
+      id: 063-project-execution-mode
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_project_execution_mode (
+                project_id uuid primary key references officium_project (id) on delete cascade,
+                mode text not null,
+                implementer_role text not null,
+                version integer not null,
+                updated_at timestamptz not null,
+                updated_by jsonb
+              );

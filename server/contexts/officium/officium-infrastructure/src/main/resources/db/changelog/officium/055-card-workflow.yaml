@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # A card's own workflow (JAVA-1591): the role and mods it wants in each phase. Null means the role matrix answers.
+  # Expand only: a nullable column the previous release never names, so it ignores it during the rolling deploy.
+  - changeSet:
+      id: 055-card-workflow
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: alter table officium_card add column if not exists workflow jsonb;
+      rollback:
+        - sql:
+            sql: alter table officium_card drop column if exists workflow;

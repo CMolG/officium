@@ -1,0 +1,42 @@
+quarkus:
+  application:
+    name: officium-local
+  http:
+    # Loopback by default: Officium Local is a single-user server. Set OFFICIUM_HTTP_HOST=0.0.0.0
+    # only behind OFFICIUM_LOCAL_TOKEN (the container image does, and publishes the port on loopback).
+    host: ${OFFICIUM_HTTP_HOST:127.0.0.1}
+    port: ${OFFICIUM_HTTP_PORT:8080}
+    limits:
+      max-body-size: ${OFFICIUM_HTTP_MAX_BODY_SIZE:40M}
+  websockets-next:
+    server:
+      max-frame-size: 2097152
+      max-message-size: 2097152
+  datasource:
+    db-kind: postgresql
+    username: ${OFFICIUM_DB_USER:officium}
+    password: ${OFFICIUM_DB_PASSWORD:officium}
+    jdbc:
+      url: ${OFFICIUM_DB_URL:jdbc:postgresql://localhost:5432/officium}
+  liquibase:
+    migrate-at-start: true
+    change-log: db/changelog/changelog-master.yaml
+  scheduler:
+    metrics:
+      enabled: true
+
+officium:
+  local:
+    # The one account every request is resolved to.
+    account-id: ${OFFICIUM_LOCAL_ACCOUNT_ID:00000000-0000-4000-8000-000000000001}
+    owner-name: ${OFFICIUM_LOCAL_OWNER_NAME:Local owner}
+    # When set, API and MCP requests must carry "Authorization: Bearer <token>".
+    token: ${OFFICIUM_LOCAL_TOKEN:}
+  search:
+    provider: ${OFFICIUM_SEARCH_PROVIDER:roaring}
+
+javadaba:
+  officium:
+    # Used in links an agent is handed (heartbeat setup, machine connect).
+    app-url: ${OFFICIUM_APP_URL:http://localhost:3000}
+    public-api-url: ${OFFICIUM_PUBLIC_API_URL:http://localhost:8080}

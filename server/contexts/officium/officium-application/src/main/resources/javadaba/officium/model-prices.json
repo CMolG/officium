@@ -1,0 +1,38 @@
+{
+  "$comment": "Officium's API-equivalent price table for the value report and Contributions (card://JAVA-1047, JAVA-1777). Versioned: a model's row holds from its date until the next row of the same model. A model with no row is listed as unpriced, never guessed. USD per million tokens: inputPerMillion is fresh input, cacheWrite5mPerMillion and cacheWrite1hPerMillion are the two TTL buckets of cache writes, cacheReadPerMillion is cache hits, outputPerMillion includes reasoning. Every row cites its source and the day it was checked.",
+  "prices": [
+    {
+      "model": "claude-opus-5-5",
+      "from": "2026-01-01",
+      "inputPerMillion": 4,
+      "cacheWrite5mPerMillion": 5,
+      "cacheWrite1hPerMillion": 8,
+      "cacheReadPerMillion": 0.20,
+      "outputPerMillion": 20,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Opus 5.5: input, 5-minute and 1-hour cache writes, cache reads, output). The page gives no effective date, so the row is taken to hold from the start of 2026.",
+      "checkedOn": "2026-10-21"
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "from": "2026-01-01",
+      "inputPerMillion": 2,
+      "cacheWrite5mPerMillion": 2.50,
+      "cacheWrite1hPerMillion": 4,
+      "cacheReadPerMillion": 0.10,
+      "outputPerMillion": 10,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: input, 5-minute and 1-hour cache writes, cache reads, output). The page gives no effective date, so the row is taken to hold from the start of 2026.",
+      "checkedOn": "2026-10-21"
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "from": "2026-01-01",
+      "inputPerMillion": 0.10,
+      "cacheWrite5mPerMillion": 0.125,
+      "cacheWrite1hPerMillion": 0.20,
+      "cacheReadPerMillion": 0.01,
+      "outputPerMillion": 0.50,
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Haiku 5.5, prompts up to 100,000 tokens). Prompts over 100,000 tokens cost more ($0.50 input, $0.625 and $1 cache writes, $0.05 cache reads, $2.50 output) and a session's usage does not say which prompt was which, so this understates them. No effective date on the page: taken from the start of 2026.",
+      "checkedOn": "2026-10-21"
+    }
+  ]
+}

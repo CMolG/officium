@@ -1,0 +1,27 @@
+databaseChangeLog:
+  # JAVA-1524: work profiles. An account's own profiles and its edited copies of the built-ins (Claude Standard,
+  # Claude Eco: a built-in nobody edited has no row), each an overlay on Officium's default role matrix, versioned;
+  # and the profile a project has active, which its owner set. Expand only: two new tables the previous release
+  # ignores, and a project with no active profile keeps today's matrix.
+  - changeSet:
+      id: 050-work-profiles
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_work_profile (
+                account_id uuid not null,
+                profile_id text not null,
+                name text not null,
+                overrides jsonb not null,
+                version integer not null,
+                updated_at timestamptz not null,
+                primary key (account_id, profile_id)
+              );
+              create table if not exists officium_project_work_profile (
+                project_id uuid primary key references officium_project (id) on delete cascade,
+                account_id uuid not null,
+                profile_id text not null,
+                activated_at timestamptz not null
+              );

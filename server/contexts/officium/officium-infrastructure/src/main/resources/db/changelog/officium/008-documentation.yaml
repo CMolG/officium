@@ -1,0 +1,24 @@
+databaseChangeLog:
+  # JAVA-130: a project's documentation, Markdown pages keyed by their path inside the project
+  # (`procedures/deploy`). They go with the project, so deleting it or purging its owner's account
+  # takes them too.
+  - changeSet:
+      id: 008-doc-pages
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              create table if not exists officium_doc_page (
+                id uuid primary key,
+                project_id uuid not null references officium_project(id) on delete cascade,
+                path text not null,
+                title text not null,
+                body text not null default '',
+                version int not null default 1,
+                created_by jsonb not null,
+                updated_by jsonb not null,
+                created_at timestamptz not null,
+                updated_at timestamptz not null
+              );
+              create unique index if not exists uq_officium_doc_page_path on officium_doc_page (project_id, path);

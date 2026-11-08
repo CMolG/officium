@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-card-form-answer-language
+      author: javadaba
+      context: default
+      comment: >
+        JAVA-1082: the language a human card's form was filled in, kept with its answer. Null for the
+        answers given before it, which were all in the form's one language.
+      changes:
+        - sql:
+            sql: |
+              alter table officium_card_form_answer add column if not exists lang text;

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  # JDB-242 (user decision 2026-09-15): attachment bytes live on the project's machine, never in
+  # our object storage. `storage_key` (a MinIO key) becomes `path`, relative to that machine's
+  # project directory. Rows imported from `.backlog/` already carried a path behind the
+  # `backlog-path:` marker and keep it; rows whose bytes were in MinIO have no file anywhere a
+  # machine can serve, so they are dropped (Officium was unreleased; the bucket objects are
+  # removed by hand).
+  - changeSet:
+      id: 002-attachments-on-the-machine
+      author: javadaba
+      context: default
+      changes:
+        - sql:
+            sql: |
+              delete from officium_card_attachment where storage_key not like 'backlog-path:%';
+              update officium_card_attachment set storage_key = substr(storage_key, length('backlog-path:') + 1);
+              alter table officium_card_attachment rename column storage_key to path;
